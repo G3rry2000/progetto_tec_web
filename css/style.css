@@ -1,0 +1,139 @@
+/* --- COLORI SQUADRA --- */
+:root {
+    --verde-squadra: #009444; /* Un bel verde smeraldo sportivo */
+    --verde-chiaro: #00b353;  /* Per gli hover */
+    --bianco: #ffffff;
+    --sfondo-grigio: #f4f4f4; /* Per non avere il bianco "sparato" negli occhi */
+}
+
+/* Resetta i margini di base e imposta il font */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    /* Uso Montserrat se disponibile, altrimenti un sans-serif standard */
+    font-family: 'Montserrat', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+body {
+    background-color: var(--sfondo-grigio);
+    color: #333; /* Colore testo base scuro per leggibilità */
+}
+
+/* --- HEADER E MENU (Stile Biancoverde) --- */
+.main-header {
+    background-color: var(--verde-squadra); /* Sfondo Verde */
+    color: var(--bianco);                   /* Testo Bianco */
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 40px;
+    /* Una striscia bianca sottile sotto per dare stacco */
+    border-bottom: 3px solid var(--bianco); 
+    box-shadow: 0 4px 8px rgba(0, 148, 68, 0.3); /* Ombra verde soffusa */
+}
+
+.main-header .logo a {
+    color: var(--bianco);
+    text-decoration: none;
+    font-size: 26px;
+    font-weight: 800; /* Bello cicciotto */
+    text-transform: uppercase; /* Tutto maiuscolo fa più squadra */
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.main-nav ul {
+    list-style: none;
+    display: flex;
+    gap: 25px;
+    align-items: center;
+}
+
+.main-nav a {
+    color: var(--bianco);
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 16px;
+    padding: 8px 12px;
+    border-radius: 4px;
+    transition: all 0.3s ease;
+}
+
+/* Effetto hover sui link normali */
+.main-nav a:not(.btn-login):hover {
+    background-color: rgba(255, 255, 255, 0.2); /* Un bianco semitrasparente */
+    color: var(--bianco);
+}
+
+/* --- BOTTONE LOGIN SPECIALE --- */
+/* Lo facciamo bianco con testo verde per contrasto */
+.btn-login {
+    background-color: var(--bianco);
+    color: var(--verde-squadra) !important; /* Forzo il colore verde */
+    padding: 10px 20px !important;
+    border-radius: 30px; /* Arrotondato, più moderno */
+    font-weight: bold !important;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+}
+
+.btn-login:hover {
+    background-color: var(--verde-chiaro); /* Diventa verde chiaro al passaggio */
+    color: var(--bianco) !important;       /* E il testo diventa bianco */
+    transform: translateY(-2px); /* Si alza leggermente */
+}
+
+/* --- AREA CENTRALE --- */
+.content-area {
+    min-height: 80vh; /* Assicura che il footer stia in basso */
+    padding: 50px;
+    max-width: 1200px;
+    margin: 0 auto; /* Centra il contenuto nella pagina */
+    background-color: var(--bianco); /* Sfondo bianco pulito per il contenuto */
+    box-shadow: 0 0 20px rgba(0,0,0,0.05); /* Leggera ombra ai lati */
+    margin-top: 20px;
+    margin-bottom: 20px;
+    border-radius: 8px;
+}
+
+/* Stili base per i titoli nelle pagine */
+.content-area h1 {
+    color: var(--verde-squadra);
+    text-transform: uppercase;
+    margin-bottom: 20px;
+    border-bottom: 3px solid var(--verde-squadra);
+    display: inline-block;
+    padding-bottom: 10px;
+}
+
+/* --- FOOTER --- */
+.main-footer {
+    background-color: var(--verde-squadra); /* Sfondo Verde */
+    color: var(--bianco);                   /* Testo Bianco */
+    text-align: center;
+    padding: 30px 20px;
+    /* Striscia bianca sopra */
+    border-top: 3px solid var(--bianco);
+    font-size: 15px;
+}
+
+.main-footer strong {
+    color: #fff;
+    text-transform: uppercase;
+}
+/* --- STILI EXTRA FOOTER --- */
+.footer-motto {
+    font-size: 20px;
+    font-style: italic;
+    font-weight: bold;
+    color: var(--bianco);
+    margin-bottom: 15px;
+    text-shadow: 1px 1px 3px rgba(0,0,0,0.5); /* Piccola ombra per farlo spiccare */
+}
+
+.footer-credits {
+    margin-top: 15px;
+    font-size: 12px;
+    opacity: 0.7; /* Lo rende leggermente più trasparente per non distrarre */
+}
