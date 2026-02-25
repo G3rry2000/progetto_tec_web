@@ -6,6 +6,7 @@
     <title>ASD Morra De Sanctis 🐺🟢⚪️</title>
     <link rel="stylesheet" href="css/style.css">
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap" rel="stylesheet">
+    <?php if(isset($css_extra)) { echo '<link rel="stylesheet" href="' . $css_extra . '">'; } ?>
 </head>
 <body>
 
