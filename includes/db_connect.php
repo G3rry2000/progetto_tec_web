@@ -2,7 +2,7 @@
 // Parametri di connessione (uguali per te e i tuoi colleghi)
 $host = "localhost";
 $port = "5432"; // La porta standard di PostgreSQL
-$dbname = "gruppoXX"; // INSERISCI QUI IL NOME DEL TUO DATABASE!
+$dbname = "morra_db"; // INSERISCI QUI IL NOME DEL TUO DATABASE!
 $user = "www";
 $password = "www";
 
