@@ -18,7 +18,7 @@ if (isset($_POST['submit_registrazione'])) {
         $stmt->execute([$nome, $email, $password, $giocatore]);
         
         // Se va a buon fine, lo logghiamo subito
-        $_SESSION['id_utente'] = $pdo->lastInsertId();
+        $_SESSION['id_utente'] = $pdo->lastInsertId('utenti_id_seq');
         $_SESSION['nome'] = $nome;
         $_SESSION['ruolo'] = 'tifoso';
         header("Location: curva.php");
