@@ -1,36 +1,25 @@
 <?php
-// Parametri di connessione (uguali per te e i tuoi colleghi)
-$host = "localhost";
-$port = "5432"; // La porta standard di PostgreSQL
-$dbname = "morra_db"; // INSERISCI QUI IL NOME DEL TUO DATABASE!
-$user = "www";
-$password = "www";
+// =================================================================
+// PARAMETRI DI CONNESSIONE (Username e Password richiesti dal PDF)
+// =================================================================
+$host     = "localhost";
+$port     = "5432";
+$dbname   = "morra_db"; // Nome che hai chiesto (Ma ricorda 'gruppoXX' per il PDF!)
+$user     = "www";        // Username richiesto [cite: 22]
+$password = "www";        // Password richiesta [cite: 24]
 
-// Creazione della stringa di connessione
+// Creazione della stringa di connessione per PostgreSQL
 $stringa_connessione = "host=$host port=$port dbname=$dbname user=$user password=$password";
 
-// Tentativo di connessione
+// Tentativo di connessione (Senza PDO, come richiesto)
 $db = pg_connect($stringa_connessione);
 
 // Controllo se la connessione è fallita
 if (!$db) {
+    // Messaggio di errore utile per il debug durante il progetto
     die("Errore fatale: Impossibile connettersi al database PostgreSQL.");
-} 
-// (Se non esce nessun messaggio, significa che la connessione è perfetta!)
-
-// ==========================================
-// CONNESSIONE 2: PER IL LOGIN/CURVA (PDO)
-// ==========================================
-$dsn = "pgsql:host=$host;port=$port;dbname=$dbname";
-$opzioni = [
-    PDO::ATTR_ERRMODE            => PDO::ERRMODE_EXCEPTION,
-    PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
-    PDO::ATTR_EMULATE_PREPARES   => false,
-];
-
-try {
-    $pdo = new PDO($dsn, $user, $password, $opzioni);
-} catch (\PDOException $e) {
-    die("Errore di connessione PDO: " . $e->getMessage());
 }
+
+// Se arrivi qui, la connessione è riuscita! 
+// Non stampiamo nulla per non sporcare l'HTML del sito.
 ?>

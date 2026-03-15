@@ -1,0 +1,91 @@
+/* ===== HERO ===== */
+.stagione-hero {
+    background: linear-gradient(135deg, #005c2b 0%, #003318 100%);
+    text-align: center;
+    padding: 40px 20px 30px;
+    margin: -50px -50px 30px -50px;
+    border-bottom: 3px solid #009444;
+}
+.stagione-label {
+    font-size: 0.75rem;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: #7ec896;
+    margin-bottom: 6px;
+}
+.stagione-hero h1 {
+    font-size: clamp(2rem, 5vw, 3.4rem);
+    font-weight: 900;
+    color: #fff;
+    text-transform: uppercase;
+    margin: 0;
+}
+.stagione-hero h1 span { color: #009444; }
+
+/* ===== TAB NAV ===== */
+.stagione-tabs {
+    display: flex;
+    border-bottom: 2px solid #ddd;
+    margin-bottom: 28px;
+    overflow-x: auto;
+}
+.stab-btn {
+    background: none;
+    border: none;
+    border-bottom: 3px solid transparent;
+    color: #888;
+    font-weight: 700;
+    text-transform: uppercase;
+    padding: 13px 24px;
+    cursor: pointer;
+    transition: 0.2s;
+}
+.stab-btn.active {
+    color: #009444;
+    border-bottom-color: #009444;
+}
+
+/* ===== PANNELLI ===== */
+.stab-panel { display: none; }
+.stab-panel.active { display: block; animation: fadeIn 0.3s; }
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+.stagione-section-title {
+    font-size: 1.1rem;
+    font-weight: 800;
+    color: #009444;
+    text-transform: uppercase;
+    border-bottom: 2px solid #009444;
+    display: inline-block;
+    margin-bottom: 18px;
+}
+
+/* ===== CLASSIFICA E CALENDARIO ===== */
+.classifica-table { width: 100%; border-collapse: collapse; }
+.classifica-table td, .classifica-table th { padding: 10px; border-bottom: 1px solid #eee; text-align: center; }
+.col-nome { text-align: left !important; }
+.riga-morra { background: rgba(0,148,68,0.07); }
+.nome-morra { color: #009444; font-weight: bold; }
+
+.match-row {
+    display: grid;
+    grid-template-columns: 40px 1fr 80px 1fr 30px;
+    background: #f9f9f9;
+    padding: 12px;
+    margin-bottom: 6px;
+    border-left: 4px solid #ddd;
+    align-items: center;
+}
+.match-win { border-left-color: #009444; }
+.match-lose { border-left-color: #c0392b; }
+.team-morra { font-weight: bold; color: #009444; }
+
+/* ===== ROSA ===== */
+.rosa-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 15px; }
+.giocatore-card { background: white; padding: 15px; border-radius: 8px; border-top: 3px solid #009444; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+.card-stats-blur .stat-num { filter: blur(5px); }
+.ruolo-badge { font-size: 0.6rem; padding: 3px 6px; border-radius: 4px; text-transform: uppercase; font-weight: bold; }
+.badge-att { background: #fee2e2; color: #991b1b; }
+.badge-cen { background: #dbeafe; color: #1e40af; }
+.badge-dif { background: #dcfce7; color: #166534; }
+.badge-por { background: #fef3c7; color: #92400e; }
