@@ -1,6 +1,5 @@
 <?php
 session_start();
-// Assicurati che il percorso sia corretto (nel tuo precedente messaggio era db_connect.php)
 require_once 'includes/db_connect.php'; 
 
 $errore_login = "";
@@ -8,36 +7,27 @@ $errore_reg = "";
 
 // --- LOGICA REGISTRAZIONE ---
 if (isset($_POST['submit_registrazione'])) {
-    $nome = $_POST['nome'];
-    $email = $_POST['email'];
-    // Hash della password per sicurezza (richiesto dai buoni standard di progetto)
+    $nome = htmlspecialchars($_POST['nome']);
+    $email = htmlspecialchars($_POST['email']);
     $password_hash = password_hash($_POST['password'], PASSWORD_BCRYPT); 
-    $giocatore = $_POST['giocatore'];
+    $giocatore = htmlspecialchars($_POST['giocatore']);
 
-    // 1. Prepariamo la query di inserimento (Previene SQL Injection)
-    $query_ins = "INSERT INTO utenti (nome, email, password, giocatore_preferito, ruolo) VALUES ($1, $2, $3, $4, 'tifoso')";
-    $prep = pg_prepare($db, "insert_user", $query_ins);
+    $query_ins = "INSERT INTO public.utenti (nome, email, password, giocatore_preferito, ruolo) VALUES ($1, $2, $3, $4, 'tifoso')";
+    $res = pg_query_params($db, $query_ins, array($nome, $email, $password_hash, $giocatore));
 
-    if ($prep) {
-        // 2. Eseguiamo la query
-        $res = pg_execute($db, "insert_user", array($nome, $email, $password_hash, $giocatore));
+    if ($res) {
+        $query_check = "SELECT id, nome, ruolo FROM public.utenti WHERE email = $1";
+        $res_check = pg_query_params($db, $query_check, array($email));
+        $utente = pg_fetch_assoc($res_check);
 
-        if ($res) {
-            // Recuperiamo l'utente appena creato per loggarlo
-            $query_check = pg_prepare($db, "check_after_reg", "SELECT id, nome, ruolo FROM utenti WHERE email = $1");
-            $res_check = pg_execute($db, "check_after_reg", array($email));
-            $utente = pg_fetch_assoc($res_check);
-
-            $_SESSION['id_utente'] = $utente['id'];
-            $_SESSION['nome'] = $utente['nome'];
-            $_SESSION['ruolo'] = $utente['ruolo'];
-            
-            header("Location: curva.php");
-            exit;
-        } else {
-            // Errore 23505 in Postgres significa "chiave duplicata" (email già esistente)
-            $errore_reg = "Errore: l'email potrebbe essere già registrata o i dati non sono validi.";
-        }
+        $_SESSION['id_utente'] = $utente['id'];
+        $_SESSION['nome'] = $utente['nome'];
+        $_SESSION['ruolo'] = $utente['ruolo'];
+        
+        header("Location: index.php"); // Dopo registrazione va in home
+        exit;
+    } else {
+        $errore_reg = "Errore: l'email potrebbe essere già registrata.";
     }
 }
 
@@ -46,23 +36,31 @@ if (isset($_POST['submit_login'])) {
     $email = $_POST['email'];
     $password_inserita = $_POST['password'];
 
-    // 1. Prepariamo la query di selezione
-    $query_login = "SELECT * FROM utenti WHERE email = $1";
-    pg_prepare($db, "select_user", $query_login);
+    // Specifichiamo public.utenti per sicurezza
+    $query_login = "SELECT * FROM public.utenti WHERE email = $1";
+    $res_login = pg_query_params($db, $query_login, array($email));
     
-    // 2. Eseguiamo
-    $res_login = pg_execute($db, "select_user", array($email));
-    $utente = pg_fetch_assoc($res_login);
+    if ($res_login) {
+        $utente = pg_fetch_assoc($res_login);
 
-    // 3. Verifichiamo se l'utente esiste e se la password coincide con l'hash nel DB
-    if ($utente && password_verify($password_inserita, $utente['password'])) {
-        $_SESSION['id_utente'] = $utente['id'];
-        $_SESSION['nome'] = $utente['nome'];
-        $_SESSION['ruolo'] = $utente['ruolo'];
-        header("Location: curva.php");
-        exit;
+        // Confronto password inserita con hash nel DB
+        if ($utente && password_verify($password_inserita, $utente['password'])) {
+            $_SESSION['id_utente'] = $utente['id'];
+            $_SESSION['nome'] = $utente['nome'];
+            $_SESSION['ruolo'] = trim($utente['ruolo']); // trim rimuove spazi vuoti accidentali
+
+            // REINDIRIZZAMENTO DIFFERENZIATO
+            if ($_SESSION['ruolo'] === 'admin') {
+                header("Location: admin.php"); 
+            } else {
+                header("Location: index.php"); 
+            }
+            exit;
+        } else {
+            $errore_login = "Email o password errati, riprova!";
+        }
     } else {
-        $errore_login = "Email o password errati, riprova!";
+        $errore_login = "Errore nella comunicazione con il database.";
     }
 }
 
@@ -73,86 +71,70 @@ if (isset($_GET['logout'])) {
     exit;
 }
 
-// Inclusione Header
-$css_extra = "css/style2.css";
 include 'includes/header.php';
 ?>
 
-<main class="container-login">
+<main class="container-login" style="max-width: 500px; margin: 50px auto; padding: 20px; background: #f9f9f9; border-radius: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); font-family: sans-serif;">
     <section class="portale-tifoso">
-        <h2>Portale del Tifoso</h2>
+        <h2 style="text-align: center; color: green;">Portale Lupo Biancoverde 🐺</h2>
         
-        <div class="tab-buttons">
-            <button id="btnLogin" class="tab-btn active" onclick="cambiaTab('login')">Accesso</button>
-            <button id="btnRegistrati" class="tab-btn" onclick="cambiaTab('registrati')">Unisciti alla Squadra</button>
+        <div class="tab-buttons" style="display: flex; justify-content: space-around; margin-bottom: 20px;">
+            <button id="btnLogin" onclick="cambiaTab('login')" style="cursor:pointer; padding: 10px; border:none; background:none; border-bottom: 2px solid green; font-weight:bold;">Accesso</button>
+            <button id="btnRegistrati" onclick="cambiaTab('registrati')" style="cursor:pointer; padding: 10px; border:none; background:none; font-weight:bold;">Registrati</button>
         </div>
 
-        <div id="tab-login" class="tab-content active">
-            <?php if(!empty($errore_login)) { echo "<p class='errore' style='color:red;'>$errore_login</p>"; } ?>
-            
-            <form id="formLogin" action="login.php" method="POST">
-                <div class="form-group">
-                    <label for="login-email">Email:</label>
-                    <input type="email" id="login-email" name="email" required>
+        <div id="tab-login">
+            <?php if($errore_login) echo "<p style='color:red; text-align:center;'>$errore_login</p>"; ?>
+            <form action="login.php" method="POST">
+                <div style="margin-bottom:15px;">
+                    <label>Email:</label><br>
+                    <input type="email" name="email" required style="width:95%; padding:8px;">
                 </div>
-                
-                <div class="form-group">
-                    <label for="login-password">Password:</label>
-                    <input type="password" id="login-password" name="password" required>
+                <div style="margin-bottom:15px;">
+                    <label>Password:</label><br>
+                    <input type="password" name="password" required style="width:95%; padding:8px;">
                 </div>
-                
-                <button type="submit" name="submit_login" class="btn-primary">Entra</button>
+                <button type="submit" name="submit_login" style="width:100%; padding:10px; background:green; color:white; border:none; border-radius:5px; cursor:pointer; font-weight:bold;">ENTRA</button>
             </form>
         </div>
 
-        <div id="tab-registrati" class="tab-content" style="display:none;">
-            <?php if(!empty($errore_reg)) { echo "<p class='errore' style='color:red;'>$errore_reg</p>"; } ?>
-            
-            <form id="formRegister" action="login.php" method="POST">
-                <div class="form-group">
-                    <label for="reg-nome">Nome:</label>
-                    <input type="text" id="reg-nome" name="nome" value="<?php echo isset($_POST['nome']) ? htmlspecialchars($_POST['nome']) : ''; ?>" required>
+        <div id="tab-registrati" style="display:none;">
+            <?php if($errore_reg) echo "<p style='color:red; text-align:center;'>$errore_reg</p>"; ?>
+            <form action="login.php" method="POST">
+                <div style="margin-bottom:10px;">
+                    <label>Nome:</label><br>
+                    <input type="text" name="nome" required style="width:95%; padding:8px;">
                 </div>
-                
-                <div class="form-group">
-                    <label for="reg-email">Email:</label>
-                    <input type="email" id="reg-email" name="email" value="<?php echo isset($_POST['email']) ? htmlspecialchars($_POST['email']) : ''; ?>" required>
+                <div style="margin-bottom:10px;">
+                    <label>Email:</label><br>
+                    <input type="email" name="email" required style="width:95%; padding:8px;">
                 </div>
-                
-                <div class="form-group">
-                    <label for="reg-password">Password:</label>
-                    <input type="password" id="reg-password" name="password" required>
+                <div style="margin-bottom:10px;">
+                    <label>Password:</label><br>
+                    <input type="password" name="password" required style="width:95%; padding:8px;">
                 </div>
-                
-                <div class="form-group">
-                    <label for="reg-giocatore">Giocatore preferito:</label>
-                    <input type="text" id="reg-giocatore" name="giocatore" value="<?php echo isset($_POST['giocatore']) ? htmlspecialchars($_POST['giocatore']) : ''; ?>" required>
+                <div style="margin-bottom:10px;">
+                    <label>Giocatore Preferito:</label><br>
+                    <input type="text" name="giocatore" required style="width:95%; padding:8px;">
                 </div>
-                
-                <button type="submit" name="submit_registrazione" class="btn-primary">Registrati</button>
+                <button type="submit" name="submit_registrazione" style="width:100%; padding:10px; background:#333; color:white; border:none; border-radius:5px; cursor:pointer;">REGISTRATI</button>
             </form>
         </div>
     </section>
 </main>
 
 <script>
-// Funzione semplice per cambiare tab senza caricare la pagina
 function cambiaTab(tipo) {
-    const tabLogin = document.getElementById('tab-login');
-    const tabReg = document.getElementById('tab-registrati');
+    const L = document.getElementById('tab-login');
+    const R = document.getElementById('tab-registrati');
     const btnL = document.getElementById('btnLogin');
     const btnR = document.getElementById('btnRegistrati');
-
     if (tipo === 'login') {
-        tabLogin.style.display = 'block';
-        tabReg.style.display = 'none';
-        btnL.classList.add('active');
-        btnR.classList.remove('active');
+        L.style.display = 'block'; R.style.display = 'none';
+        btnL.style.borderBottom = '2px solid green'; btnR.style.borderBottom = 'none';
     } else {
-        tabLogin.style.display = 'none';
-        tabReg.style.display = 'block';
-        btnR.classList.add('active');
-        btnL.classList.remove('active');
+        L.style.display = 'none'; R.style.display = 'block';
+        btnR.style.borderBottom = '2px solid green'; btnL.style.borderBottom = 'none';
     }
 }
 </script>
