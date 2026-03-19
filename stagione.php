@@ -29,28 +29,21 @@ include 'includes/header.php';
         </thead>
         <tbody>
         <?php
-        $classifica = [
-            ['nome'=>'Castelfranci', 'pt'=>29,'g'=>11,'v'=>9,'n'=>2,'p'=>0,'dr'=>26],
-            ['nome'=>'FC Montemarano', 'pt'=>26,'g'=>11,'v'=>8,'n'=>2,'p'=>1,'dr'=>22],
-            ['nome'=>'Teora', 'pt'=>24,'g'=>11,'v'=>7,'n'=>3,'p'=>1,'dr'=>25],
-            ['nome'=>"Nusco '75", 'pt'=>22,'g'=>11,'v'=>7,'n'=>1,'p'=>3,'dr'=>13],
-            ['nome'=>'Morra De Sanctis', 'pt'=>17,'g'=>11,'v'=>5,'n'=>2,'p'=>4,'dr'=>1, 'morra'=>true],
-            ['nome'=>'Andretta', 'pt'=>16,'g'=>11,'v'=>4,'n'=>4,'p'=>3,'dr'=>2],
-            ['nome'=>'Villamaina', 'pt'=>3, 'g'=>11,'v'=>0,'n'=>3,'p'=>8,'dr'=>-26]
-        ];
-       
-        foreach ($classifica as $i => $t):
-            $pos = $i + 1;
-            $rowClass = isset($t['morra']) ? 'riga-morra' : ($pos <= 2 ? 'riga-promo' : '');
+        $res = pg_query($db, "SELECT * FROM classifica ORDER BY pt DESC, dr DESC");
+        $pos = 1;
+        while ($t = pg_fetch_assoc($res)):
+            $rowClass = ($t['is_morra'] == 't') ? 'riga-morra' : ($pos <= 2 ? 'riga-promo' : '');
         ?>
-        <tr class="<?= $rowClass ?>">
-            <td class="col-pos"><?= $pos ?></td>
-            <td class="col-nome <?= isset($t['morra']) ? 'nome-morra' : '' ?>"><?= htmlspecialchars($t['nome']) ?></td>
-            <td class="col-pt"><?= $t['pt'] ?></td>
-            <td><?= $t['g'] ?></td><td><?= $t['v'] ?></td><td><?= $t['n'] ?></td><td><?= $t['p'] ?></td>
-            <td><?= $t['dr'] > 0 ? '+'.$t['dr'] : $t['dr'] ?></td>
-        </tr>
-        <?php endforeach; ?>
+            <tr class="<?= $rowClass ?>">
+                <td class="col-pos"><?= $pos++ ?></td>
+                <td class="col-nome <?= ($t['is_morra'] == 't') ? 'nome-morra' : '' ?>">
+                    <?= htmlspecialchars($t['squadra']) ?>
+                </td>
+                <td class="col-pt"><?= $t['pt'] ?></td>
+                <td><?= $t['g'] ?></td><td><?= $t['v'] ?></td><td><?= $t['n'] ?></td><td><?= $t['p'] ?></td>
+                <td><?= $t['dr'] > 0 ? '+' . $t['dr'] : $t['dr'] ?></td>
+            </tr>
+        <?php endwhile; ?>
         </tbody>
     </table>
 </section>
@@ -58,20 +51,39 @@ include 'includes/header.php';
 <section id="tab-calendario" class="stab-panel" role="tabpanel">
     <h2 class="stagione-section-title">Calendario</h2>
     <div class="calendario-lista">
-        <div class="match-row match-win">
-            <span class="match-giornata">G12</span>
-            <span class="match-team team-morra">Morra De Sanctis</span>
-            <span class="match-score score-win">3 – 1</span>
-            <span class="match-team team-right">Montella Academy</span>
-            <span class="match-esito esito-v">V</span>
+        <?php
+        $resPartite = pg_query($db, "SELECT * FROM public.partite ORDER BY giornata ASC");
+        while ($p = pg_fetch_assoc($resPartite)):
+            $isMorraCasa = (strpos($p['casa'], 'Morra') !== false);
+            $mClass = 'match-future';
+            $esito = '–';
+            $eClass = 'esito-future';
+
+            if ($p['giocata'] == 't') {
+                $golMorra = $isMorraCasa ? $p['gol_casa'] : $p['gol_ospite'];
+                $golAvv = $isMorraCasa ? $p['gol_ospite'] : $p['gol_casa'];
+                
+                if ($golMorra > $golAvv) { $mClass = 'match-win'; $esito = 'V'; $eClass = 'esito-v'; }
+                elseif ($golMorra < $golAvv) { $mClass = 'match-lose'; $esito = 'S'; $eClass = 'esito-s'; }
+                else { $mClass = 'match-draw'; $esito = 'P'; $eClass = 'esito-p'; }
+            }
+        ?>
+        <div class="match-row <?= $mClass ?>">
+            <span class="match-giornata">G<?= $p['giornata'] ?></span>
+            <span class="match-team <?= $isMorraCasa ? 'team-morra' : '' ?>"><?= htmlspecialchars($p['casa']) ?></span>
+            
+            <?php if ($p['giocata'] == 't'): ?>
+                <span class="match-score <?= ($esito == 'V') ? 'score-win' : (($esito == 'S') ? 'score-lose' : 'score-draw') ?>">
+                    <?= $p['gol_casa'] ?> – <?= $p['gol_ospite'] ?>
+                </span>
+            <?php else: ?>
+                <span class="match-score score-future"><?= $p['data_match'] ?></span>
+            <?php endif; ?>
+            
+            <span class="match-team team-right <?= !$isMorraCasa ? 'team-morra' : '' ?>"><?= htmlspecialchars($p['ospite']) ?></span>
+            <span class="match-esito <?= $eClass ?>"><?= $esito ?></span>
         </div>
-        <div class="match-row match-future">
-            <span class="match-giornata">G13</span>
-            <span class="match-team">Teora</span>
-            <span class="match-score score-future">07/03</span>
-            <span class="match-team team-morra team-right">Morra De Sanctis</span>
-            <span class="match-esito esito-future">–</span>
-        </div>
+        <?php endwhile; ?>
     </div>
 </section>
 
@@ -79,8 +91,8 @@ include 'includes/header.php';
     <h2 class="stagione-section-title">Rosa Ufficiale</h2>
     <div class="rosa-grid">
     <?php
-    $res = pg_query($db, "SELECT * FROM giocatori ORDER BY ruolo DESC, nome ASC");
-    $giocatori = pg_fetch_all($res);
+    $resG = pg_query($db, "SELECT * FROM giocatori ORDER BY ruolo DESC, nome ASC");
+    $giocatori = pg_fetch_all($resG);
 
     if ($giocatori):
         foreach ($giocatori as $g):
@@ -99,16 +111,14 @@ include 'includes/header.php';
                 <p class="card-login-msg"><a href="login.php">Accedi</a> per i dettagli</p>
             <?php endif; ?>
         </article>
-    <?php 
-        endforeach; 
-    else:
-        echo "<p style='color:white;'>Nessun giocatore trovato nel database.</p>";
-    endif;
-    ?>
+    <?php endforeach; else: ?>
+        <p style='color:white;'>Nessun giocatore trovato nel database.</p>
+    <?php endif; ?>
     </div>
 </section>
 
 <script>
+// Funzione per il cambio Tab
 function apriTab(nome, btn) {
     document.querySelectorAll('.stab-panel').forEach(p => p.classList.remove('active'));
     document.querySelectorAll('.stab-btn').forEach(b => b.classList.remove('active'));
