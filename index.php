@@ -1,30 +1,80 @@
 <?php 
-// 1. Richiamiamo la "testa" del sito (Menu, Logo, Colori)
+session_start(); 
+require_once 'includes/db_connect.php'; 
 include 'includes/header.php'; 
+
+// Query per i box in basso (Prossima partita e Calendario)
+$resNext = pg_query($db, "SELECT * FROM public.partite WHERE giocata = 'f' ORDER BY giornata ASC LIMIT 1");
+$nextMatch = pg_fetch_assoc($resNext);
+
+$resCal = pg_query($db, "SELECT * FROM public.partite WHERE giocata = 'f' ORDER BY giornata ASC OFFSET 1 LIMIT 3");
 ?>
 
-<div class="home-container" style="text-align: center; padding: 40px 0;">
-    
-    <h1 style="font-size: 40px; margin-bottom: 10px;">Benvenuti nella Tana del Lupo! 🐺</h1>
-    <h2 style="color: var(--verde-squadra); margin-bottom: 30px;">La casa ufficiale dell'ASD Morra De Sanctis</h2>
-    
-    <p style="font-size: 18px; line-height: 1.6; max-width: 800px; margin: 0 auto 40px auto;">
+<div class="hero-home">
+    <div class="hero-overlay"></div>
+    <div class="hero-content">
+        <h1 class="main-team-title">ASD MORRA DE SANCTIS</h1>
+        <p class="main-team-motto">Il Branco è tornato. 🐺🟢⚪</p>
+    </div>
+</div>
+
+<div class="home-welcome">
+    <h1>BENVENUTI NELLA TANA DEL LUPO!</h1>
+    <p>
         Dimenticate i campi in erba perfetta e i riflettori da stadio. Qui si respira l'essenza vera del calcio: 
-        <strong>sudore, terra battuta e orgoglio biancoverde.</strong><br>
-        Segui la nostra marcia nel campionato di Terza Categoria campana, supporta i ragazzi e unisciti al branco!
+        <strong>sudore, terra battuta e orgoglio biancoverde.</strong>
     </p>
 
-    <div class="pulsanti-home" style="display: flex; gap: 20px; justify-content: center; margin-top: 30px;">
-        <a href="stagione.php" style="background-color: var(--verde-squadra); color: white; padding: 15px 30px; text-decoration: none; font-size: 18px; font-weight: bold; border-radius: 5px; text-transform: uppercase;">
-            🏆 Guarda il Calendario
-        </a>
-        <a href="curva.php" style="background-color: #333; color: white; padding: 15px 30px; text-decoration: none; font-size: 18px; font-weight: bold; border-radius: 5px; text-transform: uppercase;">
-            📣 Entra in Curva
-        </a>
+    <div class="pulsanti-home">
+        <a href="stagione.php" class="btn-primary">🏆 La Stagione</a>
+        <a href="curva.php" class="btn-secondary">📣 La Curva</a>
+    </div>
+</div>
+
+<div class="home-boxes-container">
+
+    <div class="box-focus">
+        <h2 class="box-title">⚽ Prossima Gara</h2>
+        
+        <?php if ($nextMatch): ?>
+        <div class="match-vs-display">
+            <div class="team-name" style="color: <?= (strpos($nextMatch['casa'], 'Morra') !== false) ? 'var(--verde-squadra)' : '#333' ?>;">
+                <?= htmlspecialchars($nextMatch['casa']) ?>
+            </div>
+            <div class="vs-label">VS</div>
+            <div class="team-name" style="color: <?= (strpos($nextMatch['ospite'], 'Morra') !== false) ? 'var(--verde-squadra)' : '#333' ?>;">
+                <?= htmlspecialchars($nextMatch['ospite']) ?>
+            </div>
+        </div>
+        
+        <div class="match-info-footer">
+            <span class="big-date">📅 <?= $nextMatch['data_match'] ?></span> 
+            <span class="stadium-label">| 📍 Morra De Sanctis</span>
+        </div>
+        <?php else: ?>
+            <p style="text-align:center; padding:20px; color:#888;">Nessun match in programma.</p>
+        <?php endif; ?>
+    </div>
+
+    <div class="box-calendar">
+        <h2 class="box-title">📅 Prossimi Impegni</h2>
+
+        <?php while ($c = pg_fetch_assoc($resCal)): ?>
+        <div class="cal-row">
+            <div class="cal-date"><?= $c['data_match'] ?></div>
+            <div class="cal-teams">
+                <span class="<?= (strpos($c['casa'], 'Morra') !== false) ? 'is-morra' : '' ?>"><?= htmlspecialchars($c['casa']) ?></span>
+                <span class="vs-small">vs</span>
+                <span class="<?= (strpos($c['ospite'], 'Morra') !== false) ? 'is-morra' : '' ?>"><?= htmlspecialchars($c['ospite']) ?></span>
+            </div>
+        </div>
+        <?php endwhile; ?>
+
+        <div style="text-align: right; margin-top: 15px;">
+            <a href="stagione.php" class="link-full">Vedi tutto →</a>
+        </div>
     </div>
 
 </div>
-<?php 
-// 2. Richiamiamo la "coda" del sito (Motto, Copyright)
-include 'includes/footer.php'; 
-?>
+
+<?php include 'includes/footer.php'; ?>

@@ -1,53 +1,66 @@
-/* --- COLORI SQUADRA --- */
+/* ==========================================================================
+   1. COLORI E VARIABILI 
+   ========================================================================== */
 :root {
-    --verde-squadra: #009444; /* Un bel verde smeraldo sportivo */
-    --verde-chiaro: #00b353;  /* Per gli hover */
+    --verde-squadra: #009444; 
+    --verde-chiaro: #00b353;  
     --bianco: #ffffff;
-    --sfondo-grigio: #f4f4f4; /* Per non avere il bianco "sparato" negli occhi */
+    --sfondo-grigio: #f4f4f4; 
 }
 
-/* Resetta i margini di base e imposta il font */
-* {
-    box-sizing: border-box;
-    margin: 0;
-    padding: 0;
-    /* Uso Montserrat se disponibile, altrimenti un sans-serif standard */
-    font-family: 'Montserrat', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+* { 
+    box-sizing: border-box; 
+    margin: 0; 
+    padding: 0; 
+    font-family: 'Montserrat', sans-serif; 
 }
 
-body {
-    background-color: var(--sfondo-grigio);
-    color: #333; /* Colore testo base scuro per leggibilità */
+body { 
+    background-color: var(--sfondo-grigio); 
+    color: #333; 
+    overflow-x: hidden; 
 }
 
-/* --- HEADER E MENU (Stile Biancoverde) --- */
+/* ==========================================================================
+   2. NUOVO HEADER (Logo a Sinistra, Menu a Destra)
+   ========================================================================== */
 .main-header {
-    background-color: var(--verde-squadra); /* Sfondo Verde */
-    color: var(--bianco);                   /* Testo Bianco */
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 15px 40px;
-    /* Una striscia bianca sottile sotto per dare stacco */
-    border-bottom: 3px solid var(--bianco); 
-    box-shadow: 0 4px 8px rgba(0, 148, 68, 0.3); /* Ombra verde soffusa */
+    background-color: var(--verde-squadra);
+    color: var(--bianco);
+    padding: 10px 0;
+    border-bottom: 3px solid var(--bianco);
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
 }
 
-.main-header .logo a {
-    color: var(--bianco);
-    text-decoration: none;
-    font-size: 26px;
-    font-weight: 800; /* Bello cicciotto */
-    text-transform: uppercase; /* Tutto maiuscolo fa più squadra */
+.header-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: flex;
+    justify-content: space-between; /* Spinge il logo a sx e il menu a dx */
+    align-items: center;
+    padding: 0 20px;
+}
+
+.logo a {
     display: flex;
     align-items: center;
-    gap: 10px;
+    gap: 12px;
+    text-decoration: none;
+    color: white;
+    font-weight: 800;
+    font-size: 22px;
+    text-transform: uppercase;
+}
+
+.logo-img {
+    height: 50px; /* Regola questa altezza per il tuo logo */
+    width: auto;
 }
 
 .main-nav ul {
     list-style: none;
     display: flex;
-    gap: 25px;
+    gap: 15px;
     align-items: center;
 }
 
@@ -55,85 +68,141 @@ body {
     color: var(--bianco);
     text-decoration: none;
     font-weight: 600;
-    font-size: 16px;
+    font-size: 14px;
     padding: 8px 12px;
+    transition: 0.3s;
     border-radius: 4px;
-    transition: all 0.3s ease;
 }
 
-/* Effetto hover sui link normali */
-.main-nav a:not(.btn-login):hover {
-    background-color: rgba(255, 255, 255, 0.2); /* Un bianco semitrasparente */
-    color: var(--bianco);
+.main-nav a:hover:not(.btn-login) {
+    background: rgba(255,255,255,0.1);
 }
 
-/* --- BOTTONE LOGIN SPECIALE --- */
-/* Lo facciamo bianco con testo verde per contrasto */
 .btn-login {
-    background-color: var(--bianco);
-    color: var(--verde-squadra) !important; /* Forzo il colore verde */
-    padding: 10px 20px !important;
-    border-radius: 30px; /* Arrotondato, più moderno */
+    background: white;
+    color: var(--verde-squadra) !important;
     font-weight: bold !important;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    border-radius: 5px;
 }
 
-.btn-login:hover {
-    background-color: var(--verde-chiaro); /* Diventa verde chiaro al passaggio */
-    color: var(--bianco) !important;       /* E il testo diventa bianco */
-    transform: translateY(-2px); /* Si alza leggermente */
+/* ==========================================================================
+   3. HERO SECTION (Foto Squadra Full Width)
+   ========================================================================== */
+.hero-home {
+    width: 100%;
+    height: 550px;
+    /* ATTENZIONE: Se vedi nero, controlla se il file è .jpg o .JPG o .png */
+    background: #222 url('../images/foto_squadra.jpg') no-repeat center center;
+    background-size: cover;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    color: white;
 }
 
-/* --- AREA CENTRALE --- */
+.hero-overlay {
+    position: absolute;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0,0,0,0.5); /* Scurisce la foto per far leggere il titolo */
+}
+
+.hero-content {
+    position: relative;
+    z-index: 10;
+    text-align: center;
+}
+
+.main-team-title {
+    font-size: 4.5rem;
+    font-weight: 900;
+    text-shadow: 2px 2px 10px rgba(0,0,0,0.5);
+}
+
+.main-team-motto {
+    font-size: 1.5rem;
+    font-weight: 300;
+    letter-spacing: 5px;
+    text-transform: uppercase;
+}
+
+/* ==========================================================================
+   4. FIX CONTENITORE E BENVENUTO
+   ========================================================================== */
 .content-area {
-    min-height: 80vh; /* Assicura che il footer stia in basso */
-    padding: 50px;
-    max-width: 1200px;
-    margin: 0 auto; /* Centra il contenuto nella pagina */
-    background-color: var(--bianco); /* Sfondo bianco pulito per il contenuto */
-    box-shadow: 0 0 20px rgba(0,0,0,0.05); /* Leggera ombra ai lati */
-    margin-top: 20px;
-    margin-bottom: 20px;
-    border-radius: 8px;
+    background: transparent !important;
+    box-shadow: none !important;
+    max-width: 100% !important;
+    padding: 0 !important;
+    margin: 0 !important;
 }
 
-/* Stili base per i titoli nelle pagine */
-.content-area h1 {
+.home-welcome {
+    background: white;
+    padding: 60px 20px;
+    text-align: center;
+    max-width: 1100px;
+    margin: 40px auto;
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+}
+
+.pulsanti-home { display: flex; gap: 20px; justify-content: center; margin-top: 30px; }
+.btn-primary { background: var(--verde-squadra); color: white; padding: 15px 30px; text-decoration: none; font-weight: bold; border-radius: 5px; }
+.btn-secondary { background: #333; color: white; padding: 15px 30px; text-decoration: none; font-weight: bold; border-radius: 5px; }
+
+/* ==========================================================================
+   5. BOX MATCH E CALENDARIO
+   ========================================================================== */
+.home-boxes-container {
+    display: flex;
+    gap: 24px;
+    max-width: 1100px;
+    margin: 0 auto 60px auto;
+    flex-wrap: wrap;
+    padding: 0 20px;
+}
+
+.box-focus, .box-calendar {
+    background: white;
+    border-radius: 12px;
+    border: 1px solid #ddd;
+    padding: 30px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+}
+
+.box-focus { flex: 2; min-width: 320px; }
+.box-calendar { flex: 1; min-width: 280px; }
+
+.box-title {
     color: var(--verde-squadra);
     text-transform: uppercase;
-    margin-bottom: 20px;
-    border-bottom: 3px solid var(--verde-squadra);
-    display: inline-block;
+    font-size: 14px;
+    border-bottom: 2px solid var(--verde-squadra);
     padding-bottom: 10px;
+    margin-bottom: 20px;
 }
 
-/* --- FOOTER --- */
+.match-vs-display { display: flex; align-items: center; justify-content: space-around; padding: 20px 0; }
+.team-name { font-size: 24px; font-weight: bold; }
+.vs-label { font-size: 26px; font-weight: bold; color: #ddd; }
+
+/* Data Ingrandita */
+.big-date { font-size: 24px; font-weight: bold; color: #333; display: block; margin-bottom: 5px; }
+.stadium-label { font-size: 16px; color: #888; }
+
+.cal-row { padding: 12px 0; border-bottom: 1px solid #f0f0f0; }
+.cal-date { font-size: 11px; color: #aaa; margin-bottom: 4px; }
+.cal-teams { display: flex; justify-content: space-between; font-size: 14px; }
+.is-morra { color: var(--verde-squadra); font-weight: bold; }
+
+/* ==========================================================================
+   6. FOOTER
+   ========================================================================== */
 .main-footer {
-    background-color: var(--verde-squadra); /* Sfondo Verde */
-    color: var(--bianco);                   /* Testo Bianco */
+    background: var(--verde-squadra);
+    color: white;
     text-align: center;
-    padding: 30px 20px;
-    /* Striscia bianca sopra */
-    border-top: 3px solid var(--bianco);
-    font-size: 15px;
-}
-
-.main-footer strong {
-    color: #fff;
-    text-transform: uppercase;
-}
-/* --- STILI EXTRA FOOTER --- */
-.footer-motto {
-    font-size: 20px;
-    font-style: italic;
-    font-weight: bold;
-    color: var(--bianco);
-    margin-bottom: 15px;
-    text-shadow: 1px 1px 3px rgba(0,0,0,0.5); /* Piccola ombra per farlo spiccare */
-}
-
-.footer-credits {
-    margin-top: 15px;
-    font-size: 12px;
-    opacity: 0.7; /* Lo rende leggermente più trasparente per non distrarre */
+    padding: 50px 20px;
+    margin-top: 50px;
 }
