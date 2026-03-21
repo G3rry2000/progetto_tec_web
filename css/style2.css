@@ -51,9 +51,9 @@
 
 .btn-primary {
     width: 100%;
-    background-color: var(--oro-squadra);
-    color: #333;
-    border: none;
+    background-color: var(--bianco); /* Sfondo diventato bianco */
+    color: var(--verde-squadra) !important; /* Scritta verde */
+    border: 2px solid var(--verde-squadra); /* Aggiunto un bordino per farlo staccare */
     padding: 12px;
     font-weight: bold;
     border-radius: 4px;
@@ -62,7 +62,12 @@
     margin-top: 10px;
     transition: 0.3s;
 }
-.btn-primary:hover { background-color: #e6b800; transform: translateY(-2px); }
+
+.btn-primary:hover { 
+    background-color: var(--verde-squadra); /* Al passaggio del mouse si inverte */
+    color: var(--bianco) !important; 
+    transform: translateY(-2px); 
+}
 
 /* --- BACHECA CURVA --- */
 .container-curva {
@@ -107,8 +112,26 @@
     text-align: center;
     margin-bottom: 30px;
 }
-.banner-ospite a { color: var(--oro-squadra); font-weight: bold; text-decoration: none; }
-.banner-ospite a:hover { text-decoration: underline; }
+
+/* 1. Stile base per eventuali link di testo dentro al banner */
+.banner-ospite p a { 
+    color: var(--oro-squadra); 
+    font-weight: bold; 
+    text-decoration: none; 
+}
+.banner-ospite p a:hover { 
+    text-decoration: underline; 
+}
+
+/* Il bottone rimane bianco, fa solo un piccolo salto con l'ombra */
+.banner-ospite .btn-primary:hover {
+    background-color: var(--bianco);
+    color: var(--verde-squadra) !important; 
+    border-color: var(--verde-squadra);
+    transform: translateY(-3px);
+    box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+}
+
 
 .bacheca-messaggi h3 {
     border-bottom: 2px solid var(--oro-squadra);
