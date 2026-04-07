@@ -3,7 +3,7 @@
     background: linear-gradient(135deg, #005c2b 0%, #003318 100%);
     text-align: center;
     padding: 40px 20px 30px;
-    margin: -50px -50px 30px -50px;
+    margin: 0 -50px 30px -50px; /* Corretto: top a 0 per non invadere l'header */
     border-bottom: 3px solid #009444;
 }
 .stagione-label {

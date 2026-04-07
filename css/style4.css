@@ -234,3 +234,84 @@
 .bench-section { margin-top: 20px; border-top: 1px dashed #444; }
 .bench-list { color: #888; font-size: 0.85rem; font-style: italic; margin-top: 10px; }
 .error-msg { text-align: center; padding: 50px; color: #ff5252; }
+
+/* ==========================================
+   STILI AGGIUNTIVI PER IL MATCH CENTER
+   ========================================== */
+
+/* Griglia Sostituzioni e Panchina */
+.match-details-grid {
+    display: grid; 
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); 
+    gap: 20px; 
+    max-width: 800px; 
+    margin: 30px auto; 
+    padding: 0 20px;
+}
+
+.info-card {
+    background: #161b22; 
+    padding: 20px; 
+    border-radius: 10px;
+}
+
+/* Sostituzioni */
+.subs-card { border-top: 3px solid #4caf50; }
+.subs-title { color: #4caf50; margin-bottom: 15px; }
+.sub-row { margin-bottom: 10px; border-bottom: 1px solid #333; padding-bottom: 5px; }
+.sub-in { color: #4caf50; font-weight: bold; }
+.sub-out { color: #f44336; font-size: 0.8rem; }
+
+/* Panchina */
+.bench-card { border-top: 3px solid #8b949e; }
+.bench-title { color: #8b949e; margin-bottom: 15px; }
+.bench-list { list-style: none; padding: 0; }
+.bench-item { margin-bottom: 8px; font-size: 0.9rem; color: white; }
+.bench-icon { opacity: 0.5; }
+
+/* Messaggi vuoti */
+.empty-msg { color: gray; font-size: 0.9rem; }
+
+/* Messaggio di blocco (Utenti non loggati) */
+.login-lock-message {
+    text-align: center; 
+    margin: 60px auto; 
+    max-width: 500px; 
+    padding: 40px 20px; 
+    background: rgba(255,255,255,0.05); 
+    border-radius: 15px; 
+    border: 1px dashed #4caf50;
+}
+.lock-icon { font-size: 3rem; margin-bottom: 20px; }
+.lock-title { color: #fff; margin-bottom: 10px; }
+.lock-desc { color: #ccc; line-height: 1.6; margin-bottom: 25px; }
+.lock-btn {
+    background: #4caf50; 
+    color: white; 
+    text-decoration: none; 
+    padding: 12px 30px; 
+    border-radius: 5px; 
+    font-weight: bold; 
+    display: inline-block;
+}
+
+/* Pulsante per tornare al calendario */
+.back-link-container {
+    text-align: center; 
+    margin-top: 30px; 
+    margin-bottom: 50px;
+}
+.btn-back {
+    color: #4caf50; 
+    text-decoration: none; 
+    font-weight: bold; 
+    border: 1px solid #4caf50; 
+    padding: 10px 25px; 
+    border-radius: 5px; 
+    transition: 0.3s ease;
+    display: inline-block;
+}
+.btn-back:hover {
+    background: #4caf50; 
+    color: white;
+}

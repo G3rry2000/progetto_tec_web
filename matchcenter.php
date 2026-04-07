@@ -58,8 +58,8 @@ function ottieniEventiGiocatore($nome_completo, $eventi_match) {
 
 // Carichiamo i dati solo se l'utente è loggato per risparmiare risorse
 if (isset($_SESSION['id_utente'])) {
-    // 3. Titolari
-    $resG = pg_query_params($db, "SELECT g.id, g.nome, g.ruolo, fg.linea FROM formazione_giocatori fg JOIN giocatori g ON fg.id_giocatore = g.id WHERE fg.id_partita = $1 ORDER BY fg.linea ASC", [$id_partita]);
+    // 3. Titolari - CORRETTO CON ORDINE ORIZZONTALE
+    $resG = pg_query_params($db, "SELECT g.id, g.nome, g.ruolo, fg.linea, fg.ordine_orizzontale FROM formazione_giocatori fg JOIN giocatori g ON fg.id_giocatore = g.id WHERE fg.id_partita = $1 ORDER BY fg.linea ASC, fg.ordine_orizzontale ASC", [$id_partita]);
     $formazione = [];
     while ($row = pg_fetch_assoc($resG)) { $formazione[$row['linea']][] = $row; }
 
@@ -115,27 +115,27 @@ if (isset($_SESSION['id_utente'])) {
             </div>
         </section>
 
-        <div class="match-details-grid" style="display:grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap:20px; max-width:800px; margin: 30px auto; padding:0 20px;">
-            <div class="info-card" style="background:#161b22; padding:20px; border-radius:10px; border-top: 3px solid #4caf50;">
-                <h3 style="color:#4caf50; margin-bottom:15px;">🔄 Sostituzioni</h3>
+        <div class="match-details-grid">
+            <div class="info-card subs-card">
+                <h3 class="subs-title">🔄 Sostituzioni</h3>
                 <?php if (empty($cambi)): ?>
-                    <p style="color:gray; font-size:0.9rem;">Nessun cambio effettuato.</p>
+                    <p class="empty-msg">Nessun cambio effettuato.</p>
                 <?php else: foreach ($cambi as $c): ?>
-                    <div class="sub-row" style="margin-bottom:10px; border-bottom:1px solid #333; padding-bottom:5px;">
-                        <span style="color:#4caf50; font-weight:bold;">▲ <?= htmlspecialchars($c['entra']) ?> <?= ottieniEventiGiocatore($c['entra'], $eventi_match) ?></span><br>
-                        <span style="color:#f44336; font-size:0.8rem;">▼ <?= htmlspecialchars($c['esce']) ?></span>
+                    <div class="sub-row">
+                        <span class="sub-in">▲ <?= htmlspecialchars($c['entra']) ?> <?= ottieniEventiGiocatore($c['entra'], $eventi_match) ?></span><br>
+                        <span class="sub-out">▼ <?= htmlspecialchars($c['esce']) ?></span>
                     </div>
                 <?php endforeach; endif; ?>
             </div>
 
-            <div class="info-card" style="background:#161b22; padding:20px; border-radius:10px; border-top: 3px solid #8b949e;">
-                <h3 style="color:#8b949e; margin-bottom:15px;">📋 A Disposizione</h3>
-                <ul style="list-style:none; padding:0;">
+            <div class="info-card bench-card">
+                <h3 class="bench-title">📋 A Disposizione</h3>
+                <ul class="bench-list">
                     <?php if (empty($disposizione)): ?>
-                        <li style="color:gray; font-size:0.9rem;">Panchina vuota.</li>
+                        <li class="empty-msg">Panchina vuota.</li>
                     <?php else: foreach ($disposizione as $d): ?>
-                        <li style="margin-bottom:8px; font-size:0.9rem; color:white;">
-                            <span style="opacity:0.5;">💺</span> <?= htmlspecialchars($d['nome']) ?> <?= ottieniEventiGiocatore($d['nome'], $eventi_match) ?>
+                        <li class="bench-item">
+                            <span class="bench-icon">💺</span> <?= htmlspecialchars($d['nome']) ?> <?= ottieniEventiGiocatore($d['nome'], $eventi_match) ?>
                         </li>
                     <?php endforeach; endif; ?>
                 </ul>
@@ -144,23 +144,21 @@ if (isset($_SESSION['id_utente'])) {
 
     <?php else: ?>
 
-        <div class="login-lock-message" style="text-align:center; margin: 60px auto; max-width: 500px; padding: 40px 20px; background: rgba(255,255,255,0.05); border-radius: 15px; border: 1px dashed #4caf50;">
-            <div style="font-size: 3rem; margin-bottom: 20px;">🔒</div>
-            <h2 style="color: #fff; margin-bottom: 10px;">Dettagli Riservati</h2>
-            <p style="color: #ccc; line-height: 1.6; margin-bottom: 25px;">
+        <div class="login-lock-message">
+            <div class="lock-icon">🔒</div>
+            <h2 class="lock-title">Dettagli Riservati</h2>
+            <p class="lock-desc">
                 La formazione ufficiale, le sostituzioni e gli eventi live sono visibili solo ai membri del branco.
             </p>
-            <a href="login.php" style="background: #4caf50; color: white; text-decoration: none; padding: 12px 30px; border-radius: 5px; font-weight: bold; display: inline-block;">
+            <a href="login.php" class="lock-btn">
                 Accedi per vedere i dettagli
             </a>
         </div>
 
     <?php endif; ?>
     
-    <div style="text-align:center; margin-top:30px; margin-bottom:50px;">
-        <a href="stagione.php" style="color:#4caf50; text-decoration:none; font-weight:bold; border:1px solid #4caf50; padding:10px 25px; border-radius:5px; transition: 0.3s;" 
-           onmouseover="this.style.background='#4caf50'; this.style.color='white';" 
-           onmouseout="this.style.background='transparent'; this.style.color='#4caf50';">
+    <div class="back-link-container">
+        <a href="stagione.php" class="btn-back">
             ← Torna al Calendario
         </a>
     </div>

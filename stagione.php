@@ -9,7 +9,7 @@ function is_pg_true($val) {
 }
 ?>
 
-<link rel="stylesheet" href="css/style3.css">
+<link rel="stylesheet" href="css/style3.css?v=2">
 
 <style>
     /* Miglioramento UX per le righe interattive */
