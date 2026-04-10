@@ -155,7 +155,7 @@ include 'includes/header.php';
             <p>Il ruggito del Bianco-Verde</p>
         </div>
         <div class="guest-lock">
-            <h2 style="color: white;">🔒 Settore Riservato</h2>
+            <h2 style="color: black;">🔒 Settore Riservato</h2>
             <p style="color: #ddd; margin-bottom: 25px;">Solo i membri del branco possono leggere e scrivere in bacheca.</p>
             <a href="login.php" class="btn-primary" style="padding: 15px 40px; text-decoration: none; border-radius: 30px;">Entra nello Stadio</a>
         </div>
