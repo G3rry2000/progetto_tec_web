@@ -32,7 +32,7 @@ $resCal = pg_query($db, $sqlCal);
     <div class="hero-overlay"></div>
     <div class="hero-content">
         <h1 class="main-team-title">ASD MORRA DE SANCTIS</h1>
-        <p class="main-team-motto">Il Branco è tornato. 🐺🟢⚪</p>
+        <p class="main-team-motto">Il Branco è tornato 🐺🟢⚪</p>
     </div>
 </div>
 

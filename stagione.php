@@ -28,7 +28,6 @@ function is_pg_true($val) {
 <nav class="stagione-tabs" role="tablist">
     <button class="stab-btn active" onclick="apriTab('classifica',this)" role="tab">🏅 Classifica</button>
     <button class="stab-btn" onclick="apriTab('calendario',this)" role="tab">📅 Calendario</button>
-    <button class="stab-btn" onclick="apriTab('rosa',this)" role="tab">👥 Rosa</button>
 </nav>
 
 <section id="tab-classifica" class="stab-panel active" role="tabpanel">
@@ -105,35 +104,6 @@ function is_pg_true($val) {
     </div>
 </section>
 
-<section id="tab-rosa" class="stab-panel" role="tabpanel">
-    <h2 class="stagione-section-title">Il Branco</h2>
-    <div class="rosa-grid">
-    <?php
-    $queryRosa = "SELECT * FROM public.giocatori ORDER BY 
-                  CASE ruolo WHEN 'POR' THEN 1 WHEN 'DIF' THEN 2 WHEN 'CEN' THEN 3 WHEN 'ATT' THEN 4 ELSE 5 END, 
-                  nome ASC";
-    $resG = pg_query($db, $queryRosa);
-    
-    while ($g = pg_fetch_assoc($resG)):
-        $rk = strtoupper($g['ruolo'] ?? 'ND');
-    ?>
-        <article class="giocatore-card">
-            <span class="ruolo-badge badge-<?= strtolower($rk) ?>"><?= $rk ?></span>
-            <h3 class="card-nome"><?= htmlspecialchars($g['nome']) ?></h3>
-            
-            <div class="card-stats <?= !isset($_SESSION['id_utente']) ? 'card-stats-blur' : '' ?>">
-                <div class="stat-box"><span class="stat-num"><?= $g['gol'] ?></span><span class="stat-lbl">Gol</span></div>
-                <div class="stat-box"><span class="stat-num"><?= $g['presenze'] ?></span><span class="stat-lbl">Pres.</span></div>
-                <div class="stat-box"><span class="stat-num"><?= $g['ammonizioni'] ?></span><span class="stat-lbl">🟨</span></div>
-            </div>
-            
-            <?php if(!isset($_SESSION['id_utente'])): ?>
-                <p class="card-login-msg"><a href="login.php">Log in</a> per le statistiche</p>
-            <?php endif; ?>
-        </article>
-    <?php endwhile; ?>
-    </div>
-</section>
 
 <script>
 function apriTab(nome, btn) {
