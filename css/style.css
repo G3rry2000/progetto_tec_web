@@ -90,13 +90,14 @@ body {
    ========================================================================== */
 .hero-home {
     width: 100%;
-    height: 550px;
-    /* ATTENZIONE: Se vedi nero, controlla se il file è .jpg o .JPG o .png */
-    background: #222 url('../images/foto_squadra.jpg') no-repeat center center;
+    height: 75vh; 
+    min-height: 500px;
+    background: #222 url('../images/foto_squadra.jpg') no-repeat center 20%;
     background-size: cover;
     display: flex;
-    align-items: center;
+    align-items: flex-start; 
     justify-content: center;
+    padding-top: 100px; 
     position: relative;
     color: white;
 }
