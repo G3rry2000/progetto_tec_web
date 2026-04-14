@@ -1,35 +1,48 @@
 <?php
 session_start();
 require_once 'includes/db_connect.php'; 
+
 $id_partita = isset($_GET['id']) ? (int)$_GET['id'] : 0;
 include 'includes/header.php';
 
-// Recupero Dati della Partita
+// 1. RECUPERO DATI DELLA PARTITA
 $resP = pg_query_params($db, "SELECT *, to_char(data_match, 'DD/MM/YYYY HH24:MI') as data_f FROM public.partite WHERE id = $1", [$id_partita]);
 $match = pg_fetch_assoc($resP);
 
-// Recupero Eventi dalla tabella cronaca_live
+// 2. RECUPERO EVENTI DALLA CRONACA
 $resEv = pg_query_params($db, "SELECT tipo_evento, testo FROM cronaca_live WHERE id_partita = $1", [$id_partita]);
 $eventi_match = ['goal' => [], 'card' => [], 'red' => []];
 
 if ($resEv) {
     while ($ev = pg_fetch_assoc($resEv)) {
-        $eventi_match[$ev['tipo_evento']][] = strtolower($ev['testo']);
+        // Pulizia testo per il confronto
+        $eventi_match[$ev['tipo_evento']][] = strtolower(trim($ev['testo']));
     }
 }
 
- // FUNZIONE PER ASSEGNARE GLI EVENTI AI GIOCATORI
- 
-function ottieniEventiGiocatore($nome_completo, $eventi_match) {
-    $nome_lower = strtolower($nome_completo);
-    $parts = explode(' ', $nome_lower);
-    $particelle = ['di', 'de', 'del', 'della', 'lo', 'la', 'da'];
-    $is_composto = in_array($parts[0], $particelle);
-    $cognome_principale = $is_composto ? $parts[0] . ' ' . $parts[1] : $parts[0];
+/**
+ * FUNZIONE OTTIMIZZATA PER ASSEGNARE GLI EVENTI
+ * Gestisce omonimi richiedendo Nome + Cognome o Cognome + Iniziale
+ */
+function ottieniEventiGiocatore($nome_completo_db, $eventi_match, $nomi_totali_partita) {
+    $nome_completo = strtolower(trim($nome_completo_db));
+    $parts = explode(' ', $nome_completo);
     
-    $omonimi = ['caputo', 'di pietro'];
-    $serve_iniziale = false;
-    foreach($omonimi as $o) { if(strpos($cognome_principale, $o) !== false) $serve_iniziale = true; }
+    // Gestione particelle cognomi (es: "Di Pietro")
+    $particelle = ['di', 'de', 'del', 'della', 'lo', 'la', 'da'];
+    if (in_array($parts[0], $particelle) && isset($parts[1])) {
+        $cognome_rif = $parts[0] . ' ' . $parts[1];
+        $nome_rif = isset($parts[2]) ? $parts[2] : '';
+    } else {
+        $cognome_rif = $parts[0];
+        $nome_rif = isset($parts[1]) ? $parts[1] : '';
+    }
+
+    // Rilevamento automatico omonimia sul cognome
+    $count_omonimi = 0;
+    foreach ($nomi_totali_partita as $n) {
+        if (strpos(strtolower($n), $cognome_rif) === 0) $count_omonimi++;
+    }
 
     $output_html = '';
     $mappa_icone = ['goal' => '⚽', 'card' => '🟨', 'red' => '🟥'];
@@ -37,38 +50,57 @@ function ottieniEventiGiocatore($nome_completo, $eventi_match) {
     foreach ($mappa_icone as $tipo => $icona) {
         foreach ($eventi_match[$tipo] as $testo_cronaca) {
             $assegna = false;
-            if ($serve_iniziale) {
-                $nome_battesimo = end($parts);
-                $iniziale = substr($nome_battesimo, 0, 1);
-                if (strpos($testo_cronaca, $nome_lower) !== false || 
-                    strpos($testo_cronaca, $cognome_principale . ' ' . $iniziale) !== false) {
+
+            if ($count_omonimi > 1) {
+                // --- CASO OMONIMIA: Serve precisione ---
+                $iniziale = $nome_rif ? substr($nome_rif, 0, 1) : '';
+                
+                // Match "Cognome Nome", "Nome Cognome" o "Cognome I."
+                $match_pieno = (strpos($testo_cronaca, $nome_completo) !== false);
+                $match_inverso = ($nome_rif && strpos($testo_cronaca, $nome_rif . ' ' . $cognome_rif) !== false);
+                $match_iniziale = ($iniziale && strpos($testo_cronaca, $cognome_rif . ' ' . $iniziale) !== false);
+
+                if ($match_pieno || $match_inverso || $match_iniziale) {
                     $assegna = true;
                 }
             } else {
-                if (strpos($testo_cronaca, $cognome_principale) !== false) {
+                // --- CASO NORMALE: Basta il cognome ---
+                if (strpos($testo_cronaca, $cognome_rif) !== false) {
                     $assegna = true;
                 }
             }
-            if ($assegna) $output_html .= '<span class="ev-icon">' . $icona . '</span>';
+            
+            if ($assegna) {
+                $output_html .= '<span class="ev-icon">' . $icona . '</span>';
+            }
         }
     }
     return $output_html;
 }
 
-// Carichiamo i dati solo se l'utente è loggato
+// 3. CARICAMENTO DATI (Solo se loggato) E PREPARAZIONE LISTA OMONIMI
+$nomi_per_controllo = [];
+$formazione = [];
+$cambi = [];
+$disposizione = [];
+
 if (isset($_SESSION['id_utente'])) {
-    // 3. Titolari - CORRETTO CON ORDINE ORIZZONTALE
-    $resG = pg_query_params($db, "SELECT g.id, g.nome, g.ruolo, fg.linea, fg.ordine_orizzontale FROM formazione_giocatori fg JOIN giocatori g ON fg.id_giocatore = g.id WHERE fg.id_partita = $1 ORDER BY fg.linea ASC, fg.ordine_orizzontale ASC", [$id_partita]);
-    $formazione = [];
-    while ($row = pg_fetch_assoc($resG)) { $formazione[$row['linea']][] = $row; }
+    // Titolari
+    $resG = pg_query_params($db, "SELECT g.id, g.nome, g.ruolo, fg.linea FROM formazione_giocatori fg JOIN giocatori g ON fg.id_giocatore = g.id WHERE fg.id_partita = $1 ORDER BY fg.linea ASC, fg.ordine_orizzontale ASC", [$id_partita]);
+    while ($row = pg_fetch_assoc($resG)) { 
+        $formazione[$row['linea']][] = $row; 
+        $nomi_per_controllo[] = $row['nome'];
+    }
 
     // Sostituzioni
     $resS = pg_query_params($db, "SELECT ge.nome as entra, gs.nome as esce FROM sostituzioni s JOIN giocatori ge ON s.id_entra = ge.id JOIN giocatori gs ON s.id_esce = gs.id WHERE s.id_partita = $1", [$id_partita]);
     $cambi = pg_fetch_all($resS) ?: [];
+    foreach($cambi as $c) { $nomi_per_controllo[] = $c['entra']; }
 
     // Panchina
     $resB = pg_query_params($db, "SELECT g.nome FROM panchina p JOIN giocatori g ON p.id_giocatore = g.id WHERE p.id_partita = $1 AND p.id_giocatore NOT IN (SELECT id_entra FROM sostituzioni WHERE id_partita = $1)", [$id_partita]);
     $disposizione = pg_fetch_all($resB) ?: [];
+    foreach($disposizione as $d) { $nomi_per_controllo[] = $d['nome']; }
 }
 ?>
 
@@ -95,11 +127,14 @@ if (isset($_SESSION['id_utente'])) {
         <section class="pitch-container">
             <div class="pitch-grass">
                 <div class="pitch-line-v"></div><div class="pitch-line-h"></div><div class="pitch-circle"></div>
+                
                 <?php foreach ([1,2,3,4,5] as $L): if (!empty($formazione[$L])): ?>
                     <div class="pitch-line level-<?= $L ?>">
                         <?php foreach ($formazione[$L] as $p): ?>
                             <div class="player-card">
-                                <div class="player-events"><?= ottieniEventiGiocatore($p['nome'], $eventi_match) ?></div>
+                                <div class="player-events">
+                                    <?= ottieniEventiGiocatore($p['nome'], $eventi_match, $nomi_per_controllo) ?>
+                                </div>
                                 <div class="player-shirt"><?= substr($p['ruolo'], 0, 1) ?></div>
                                 <?php 
                                     $n_parts = explode(' ', $p['nome']);
@@ -121,7 +156,7 @@ if (isset($_SESSION['id_utente'])) {
                     <p class="empty-msg">Nessun cambio effettuato.</p>
                 <?php else: foreach ($cambi as $c): ?>
                     <div class="sub-row">
-                        <span class="sub-in">▲ <?= htmlspecialchars($c['entra']) ?> <?= ottieniEventiGiocatore($c['entra'], $eventi_match) ?></span><br>
+                        <span class="sub-in">▲ <?= htmlspecialchars($c['entra']) ?> <?= ottieniEventiGiocatore($c['entra'], $eventi_match, $nomi_per_controllo) ?></span><br>
                         <span class="sub-out">▼ <?= htmlspecialchars($c['esce']) ?></span>
                     </div>
                 <?php endforeach; endif; ?>
@@ -134,7 +169,8 @@ if (isset($_SESSION['id_utente'])) {
                         <li class="empty-msg">Panchina vuota.</li>
                     <?php else: foreach ($disposizione as $d): ?>
                         <li class="bench-item">
-                            <span class="bench-icon">💺</span> <?= htmlspecialchars($d['nome']) ?> <?= ottieniEventiGiocatore($d['nome'], $eventi_match) ?>
+                            <span class="bench-icon">💺</span> <?= htmlspecialchars($d['nome']) ?> 
+                            <?= ottieniEventiGiocatore($d['nome'], $eventi_match, $nomi_per_controllo) ?>
                         </li>
                     <?php endforeach; endif; ?>
                 </ul>
@@ -142,24 +178,16 @@ if (isset($_SESSION['id_utente'])) {
         </div>
 
     <?php else: ?>
-
         <div class="login-lock-message">
             <div class="lock-icon">🔒</div>
             <h2 class="lock-title">Dettagli Riservati</h2>
-            <p class="lock-desc">
-                La formazione ufficiale, le sostituzioni e gli eventi live sono visibili solo ai membri del branco.
-            </p>
-            <a href="login.php" class="lock-btn">
-                Accedi per vedere i dettagli
-            </a>
+            <p class="lock-desc">La formazione ufficiale e gli eventi live sono visibili solo ai membri del branco.</p>
+            <a href="login.php" class="lock-btn">Accedi per vedere i dettagli</a>
         </div>
-
     <?php endif; ?>
     
     <div class="back-link-container">
-        <a href="stagione.php" class="btn-back">
-            ← Torna al Calendario
-        </a>
+        <a href="stagione.php" class="btn-back">← Torna al Calendario</a>
     </div>
 </div>
 

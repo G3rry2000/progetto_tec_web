@@ -60,7 +60,7 @@ if ($isAdmin && $_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 
-//  RECUPERO EVENTI
+// 4. RECUPERO EVENTI
 $eventi = [];
 if ($id_partita > 0) {
     $resEv = pg_query_params($db, "SELECT * FROM public.cronaca_live WHERE id_partita = $1 ORDER BY id DESC", [$id_partita]);
