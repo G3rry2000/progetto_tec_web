@@ -1,0 +1,245 @@
+:root {
+    --verde-lupi: #2e7d32;
+    --verde-light: #4caf50;
+    --sfondo-dark: #121212;
+    --card-bg: #ffffff;
+    --shadow: 0 4px 15px rgba(0,0,0,0.2);
+}
+
+.container-curva {
+    max-width: 800px;
+    margin: 20px auto;
+    padding: 0 15px;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+/* Header Curva */
+.curva-header {
+    text-align: center;
+    padding: 40px 0;
+    background: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), url('../img/stadium-blur.jpg') center/cover;
+    background-color: #222; /* Fallback se manca l'immagine */
+    border-radius: 15px;
+    margin-bottom: 30px;
+    color: white;
+}
+
+.curva-header h1 { 
+    font-size: 2.5rem; 
+    text-transform: uppercase; 
+    letter-spacing: 2px; 
+    margin: 0; 
+}
+
+.curva-header p { 
+    opacity: 0.9; 
+    font-style: italic; 
+    margin-top: 10px;
+}
+
+/* Box Inserimento */
+.write-box {
+    background: var(--card-bg);
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: var(--shadow);
+    margin-bottom: 40px;
+}
+
+.write-box textarea {
+    width: 100%;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 15px;
+    font-size: 1rem;
+    resize: none;
+    transition: border 0.3s;
+    box-sizing: border-box;
+}
+
+.write-box textarea:focus { 
+    border-color: var(--verde-lupi); 
+    outline: none; 
+}
+
+.btn-grida {
+    background: var(--verde-lupi);
+    color: white;
+    border: none;
+    padding: 10px 25px;
+    border-radius: 25px;
+    font-weight: bold;
+    cursor: pointer;
+    float: right;
+    margin-top: 10px;
+    transition: 0.3s;
+}
+
+.btn-grida:hover { 
+    background: var(--verde-light); 
+    transform: translateY(-2px); 
+}
+
+/* Card Messaggi */
+.msg-card {
+    background: var(--card-bg);
+    border-radius: 12px;
+    padding: 20px;
+    margin-bottom: 20px;
+    position: relative;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    transition: transform 0.2s;
+    border-left: 5px solid var(--verde-lupi);
+}
+
+.msg-card:hover { 
+    transform: scale(1.01); 
+}
+
+.msg-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+}
+
+.user-info { 
+    display: flex; 
+    align-items: center; 
+    gap: 10px; 
+}
+
+.user-avatar { 
+    width: 40px; 
+    height: 40px; 
+    background: #f0f0f0; 
+    border-radius: 50%; 
+    display: flex; 
+    align-items: center; 
+    justify-content: center;
+    font-weight: bold; 
+    color: var(--verde-lupi);
+    border: 1px solid #ddd;
+}
+
+.user-name { 
+    font-weight: 700; 
+    color: #333; 
+}
+
+.badge-role { 
+    font-size: 0.7rem; 
+    padding: 2px 8px; 
+    border-radius: 10px; 
+    text-transform: uppercase; 
+    font-weight: bold;
+    margin-left: 5px;
+}
+
+.badge-admin { 
+    background: #fff3e0; 
+    color: #ef6c00; 
+    border: 1px solid #ffe0b2; 
+}
+
+.badge-tifoso { 
+    background: #e8f5e9; 
+    color: #2e7d32; 
+    border: 1px solid #c8e6c9; 
+}
+
+.msg-time { 
+    font-size: 0.8rem; 
+    color: #888; 
+}
+
+.msg-body { 
+    color: #444; 
+    line-height: 1.6; 
+    font-size: 1.05rem; 
+    white-space: pre-wrap; 
+}
+
+.form-delete {
+    text-align: right; 
+    margin-top: 10px;
+}
+
+.btn-delete {
+    background: none; 
+    border: none; 
+    color: #ff5252;
+    cursor: pointer; 
+    font-size: 0.8rem; 
+    opacity: 0.6;
+    transition: 0.3s;
+}
+
+.btn-delete:hover { 
+    opacity: 1; 
+    text-decoration: underline;
+}
+
+/* Area Ospiti */
+.guest-lock {
+    text-align: center; 
+    background: white;
+    padding: 50px; 
+    border-radius: 15px; 
+    box-shadow: var(--shadow);
+}
+
+.guest-lock h2 { color: #333; margin-bottom: 10px; }
+.guest-lock p { color: #666; margin-bottom: 25px; }
+
+.btn-entra {
+    display: inline-block;
+    background: var(--verde-lupi);
+    color: white;
+    padding: 15px 40px;
+    text-decoration: none;
+    border-radius: 30px;
+    font-weight: bold;
+    transition: 0.3s;
+}
+
+.btn-entra:hover {
+    background: var(--verde-light);
+}
+
+/* Utils */
+.empty-msg {
+    text-align: center; 
+    color: #666; 
+    font-style: italic;
+}
+
+.curva-footer {
+    text-align: center; 
+    margin-top: 40px;
+    padding-bottom: 20px;
+}
+
+.logout-link {
+    color: #ff5252; 
+    text-decoration: none; 
+    font-size: 0.9rem;
+}
+
+.logout-link:hover { text-decoration: underline; }
+
+.clearfix::after { 
+    content: ""; 
+    clear: both; 
+    display: table; 
+}
+
+@media (max-width: 600px) {
+    .msg-header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    .msg-time {
+        margin-top: 5px;
+    }
+}

@@ -1,0 +1,113 @@
+
+:root {
+    --gold-card: linear-gradient(135deg, #d4af37 0%, #fcf6ba 50%, #d4af37 100%);
+    --red-card: linear-gradient(135deg, #8b0000 0%, #ff4d4d 50%, #8b0000 100%);
+    --dark-bg: #0d1117;
+    --panel-bg: #161b22;
+    --morra-green: #2e7d32;
+    --morra-red: #ff4444;
+    --border-color: #30363d;
+}
+
+.almanacco-section {
+    padding: 40px 20px;
+    background: var(--dark-bg);
+    min-height: 100vh;
+    font-family: 'Segoe UI', Roboto, sans-serif;
+}
+
+.page-title {
+    text-align: center;
+    margin-bottom: 40px;
+}
+
+.page-title h1 { font-size: 3rem; font-weight: 900; color: white; margin-bottom: 10px; }
+.page-title p { color: #8b949e; font-size: 1.1rem; }
+
+/* FILTRI RUOLO */
+.filter-container {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin-bottom: 50px;
+    flex-wrap: wrap;
+}
+
+.f-btn {
+    background: #21262d;
+    border: 1px solid var(--border-color);
+    color: white;
+    padding: 10px 25px;
+    border-radius: 50px;
+    cursor: pointer;
+    transition: 0.3s ease;
+    font-weight: 600;
+}
+
+.f-btn.active, .f-btn:hover {
+    background: var(--morra-green);
+    border-color: #4caf50;
+    box-shadow: 0 0 15px rgba(76, 175, 80, 0.4);
+}
+
+/* GRID DELLE CARD */
+.almanacco-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 30px;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+/* STILE CARD BASE */
+.p-card {
+    background: var(--panel-bg);
+    border-radius: 20px;
+    padding: 25px;
+    text-align: center;
+    border: 1px solid var(--border-color);
+    position: relative;
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    overflow: hidden;
+}
+
+.p-card:hover {
+    transform: translateY(-10px);
+    border-color: #58a6ff;
+    box-shadow: 0 20px 40px rgba(0,0,0,0.6);
+}
+
+/* EFFETTI SPECIALI: GIALLO */
+.p-card.legendary { border: 2px solid #d4af37; }
+.p-card.legendary .p-avatar { border-color: #d4af37; color: #d4af37; }
+.p-card.legendary .val { color: #d4af37; }
+
+/* EFFETTI SPECIALI: ROSSO */
+.p-card.negative { 
+    border: 2px solid var(--morra-red); 
+    background: linear-gradient(160deg, #1a0505 0%, #161b22 100%); 
+}
+.p-card.negative .p-avatar { border-color: var(--morra-red); color: var(--morra-red); }
+.p-card.negative .val { color: var(--morra-red); }
+
+/* DETTAGLI CARD */
+.p-ruolo { position: absolute; top: 15px; left: 20px; font-weight: 900; color: var(--morra-green); }
+
+.p-avatar {
+    width: 100px; height: 100px; background: #30363d; border-radius: 50%;
+    margin: 10px auto 20px; display: flex; align-items: center; justify-content: center;
+    font-size: 2.5rem; border: 4px solid var(--morra-green);
+}
+
+.p-name { font-size: 1.3rem; font-weight: 700; color: white; margin-bottom: 20px; text-transform: uppercase; }
+
+/* STATISTICHE INTERNE */
+.p-stats { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; border-top: 1px solid var(--border-color); padding-top: 20px; }
+.s-val { display: block; font-size: 1.5rem; font-weight: 800; color: white; }
+.s-lbl { font-size: 0.7rem; color: #8b949e; text-transform: uppercase; letter-spacing: 1px; }
+
+.p-index { margin-top: 20px; background: rgba(255,255,255,0.05); padding: 10px; border-radius: 10px; }
+.p-index .val { display: block; font-weight: 900; font-size: 1.4rem; margin-top: 5px; }
+
+.p-badges { margin-top: 15px; display: flex; justify-content: center; gap: 10px; }
+.badge { font-size: 0.8rem; padding: 4px 10px; border-radius: 5px; background: #21262d; color: white; border: 1px solid var(--border-color); }

@@ -1,11 +1,25 @@
-/* ===== HERO ===== */
+:root {
+    --verde-squadra: #009444; /* Verde Morra */
+    --oro-squadra: #ffd700;
+    --bianco: #ffffff;
+    --nero-testo: #333333;
+}
+
+/* RESET E BASE */
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #f4f4f4;
+    margin: 0;
+}
+
+/* HERO SECTION */
 .stagione-hero {
     background: linear-gradient(135deg, #005c2b 0%, #003318 100%);
     text-align: center;
     padding: 40px 20px 30px;
-    margin: 0 -50px 30px -50px; /* Corretto: top a 0 per non invadere l'header */
-    border-bottom: 3px solid #009444;
+    border-bottom: 3px solid var(--verde-squadra);
 }
+
 .stagione-label {
     font-size: 0.75rem;
     letter-spacing: 0.22em;
@@ -13,6 +27,7 @@
     color: #7ec896;
     margin-bottom: 6px;
 }
+
 .stagione-hero h1 {
     font-size: clamp(2rem, 5vw, 3.4rem);
     font-weight: 900;
@@ -20,14 +35,14 @@
     text-transform: uppercase;
     margin: 0;
 }
-.stagione-hero h1 span { color: #009444; }
+.stagione-hero h1 span { color: var(--verde-squadra); }
 
-/* ===== TAB NAV ===== */
+/* TABS */
 .stagione-tabs {
     display: flex;
     border-bottom: 2px solid #ddd;
     margin-bottom: 28px;
-    overflow-x: auto;
+    background: white;
 }
 .stab-btn {
     background: none;
@@ -36,56 +51,108 @@
     color: #888;
     font-weight: 700;
     text-transform: uppercase;
-    padding: 13px 24px;
+    padding: 15px 24px;
     cursor: pointer;
     transition: 0.2s;
 }
 .stab-btn.active {
-    color: #009444;
-    border-bottom-color: #009444;
+    color: var(--verde-squadra);
+    border-bottom-color: var(--verde-squadra);
 }
 
-/* ===== PANNELLI ===== */
-.stab-panel { display: none; }
+.stab-panel { display: none; padding: 0 20px; }
 .stab-panel.active { display: block; animation: fadeIn 0.3s; }
 @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
+/* TABELLA CLASSIFICA */
 .stagione-section-title {
     font-size: 1.1rem;
     font-weight: 800;
-    color: #009444;
+    color: var(--verde-squadra);
     text-transform: uppercase;
-    border-bottom: 2px solid #009444;
+    border-bottom: 2px solid var(--verde-squadra);
     display: inline-block;
     margin-bottom: 18px;
 }
 
-/* ===== CLASSIFICA E CALENDARIO ===== */
-.classifica-table { width: 100%; border-collapse: collapse; }
-.classifica-table td, .classifica-table th { padding: 10px; border-bottom: 1px solid #eee; text-align: center; }
-.col-nome { text-align: left !important; }
-.riga-morra { background: rgba(0,148,68,0.07); }
-.nome-morra { color: #009444; font-weight: bold; }
+.classifica-table { 
+    width: 100%; 
+    border-collapse: collapse; 
+    background: white; 
+    border-radius: 8px; 
+    overflow: hidden; 
+    box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+}
+.classifica-table td, .classifica-table th { padding: 12px; border-bottom: 1px solid #eee; text-align: center; }
+.classifica-table th { background: #f8f8f8; color: #666; font-size: 0.8rem; }
+
+.col-nome { text-align: left !important; font-weight: 500; }
+.riga-morra { background: rgba(0,148,68,0.07) !important; font-weight: bold; }
+.nome-morra { color: var(--verde-squadra); font-weight: bold; }
+.riga-promo { border-left: 5px solid var(--oro-squadra); }
+
+/* CALENDARIO E MATCH ROW */
+.match-link {
+    text-decoration: none;
+    color: inherit;
+    display: block;
+    transition: transform 0.1s ease;
+}
 
 .match-row {
     display: grid;
-    grid-template-columns: 40px 1fr 80px 1fr 30px;
-    background: #f9f9f9;
-    padding: 12px;
-    margin-bottom: 6px;
+    grid-template-columns: 50px 1fr 100px 1fr 40px;
+    background: white;
+    padding: 15px;
+    margin-bottom: 8px;
     border-left: 4px solid #ddd;
     align-items: center;
+    border-radius: 4px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
 }
-.match-win { border-left-color: #009444; }
-.match-lose { border-left-color: #c0392b; }
-.team-morra { font-weight: bold; color: #009444; }
 
-/* ===== ROSA ===== */
-.rosa-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 15px; }
-.giocatore-card { background: white; padding: 15px; border-radius: 8px; border-top: 3px solid #009444; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
-.card-stats-blur .stat-num { filter: blur(5px); }
-.ruolo-badge { font-size: 0.6rem; padding: 3px 6px; border-radius: 4px; text-transform: uppercase; font-weight: bold; }
-.badge-att { background: #fee2e2; color: #991b1b; }
-.badge-cen { background: #dbeafe; color: #1e40af; }
-.badge-dif { background: #dcfce7; color: #166534; }
-.badge-por { background: #fef3c7; color: #92400e; }
+.match-link:hover .match-row {
+    background: rgba(0, 150, 0, 0.05);
+    border-left-width: 6px;
+    transform: translateX(5px);
+}
+
+.match-win { border-left-color: var(--verde-squadra); }
+.match-lose { border-left-color: #c0392b; }
+.match-draw { border-left-color: var(--oro-squadra); }
+
+.match-giornata { color: #888; font-weight: bold; font-size: 0.8rem; }
+.match-team { font-size: 0.95rem; }
+.team-morra { font-weight: bold; color: var(--verde-squadra); }
+.team-right { text-align: right; }
+
+.match-score {
+    text-align: center;
+    font-weight: 800;
+    background: #f0f0f0;
+    padding: 5px;
+    border-radius: 4px;
+    margin: 0 10px;
+}
+.score-future { font-size: 0.7rem; font-weight: normal; color: #666; }
+
+/* ESITI (V, S, P)*/
+.match-esito {
+    text-align: center;
+    font-weight: bold;
+    font-size: 0.9rem;
+    width: 25px;
+    height: 25px;
+    line-height: 25px;
+    border-radius: 50%;
+}
+.esito-v { color: var(--verde-squadra); }
+.esito-s { color: #c0392b; }
+.esito-p { color: var(--oro-squadra); }
+
+/* STATS BLUR */
+.card-stats-blur {
+    filter: blur(4px);
+    pointer-events: none;
+    user-select: none;
+}

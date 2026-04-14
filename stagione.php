@@ -9,16 +9,9 @@ function is_pg_true($val) {
 }
 ?>
 
-<link rel="stylesheet" href="css/style3.css?v=2">
+<link rel="stylesheet" href="css/style3.css?v=<?php echo time(); ?>">
 
-<style>
-    /* Miglioramento UX per le righe interattive */
-    .match-link { text-decoration: none; color: inherit; display: block; transition: transform 0.1s ease; }
-    .match-link:hover .match-row { background: rgba(0, 150, 0, 0.1); border-left: 4px solid var(--verde-squadra); }
-    .card-stats-blur { filter: blur(4px); pointer-events: none; user-select: none; }
-    .riga-morra { background-color: rgba(46, 125, 50, 0.15) !important; font-weight: bold; }
-    .riga-promo { border-left: 4px solid #ffd700; }
-</style>
+
 
 <div class="stagione-hero">
     <p class="stagione-label">Terza Categoria · Avellino · Girone B</p>

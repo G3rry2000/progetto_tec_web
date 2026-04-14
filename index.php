@@ -34,8 +34,8 @@ $resCal = pg_query($db, $sqlCal);
         <p>In quanto membro del Branco, hai accesso alle statistiche avanzate dei giocatori e alla bacheca della Curva.</p>
         
         <div class="pulsanti-home">
-            <a href="almanacco.php" class="btn-primary">📊 Analizza l'Almanacco</a>
-            <a href="curva.php" class="btn-secondary">💬 Vai in Bacheca</a>
+            <a href="card.php" class="btn-primary">📊 Analizza l'Almanacco</a>
+            <a href="stagione.php" class="btn-secondary">💬 Vai in Stagione</a>
         </div>
     </div>
 <?php else: ?>

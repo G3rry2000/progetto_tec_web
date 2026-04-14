@@ -1,26 +1,27 @@
-/* =========================================
-   CSS ESCLUSIVO PER LOGIN E CURVA
-   ========================================= */
-
-/* Aggiungo la variabile oro al :root esistente */
 :root {
+    --verde-squadra: #2e7d32;
     --oro-squadra: #ffcc00;
+    --bianco: #ffffff;
+    --grigio-chiaro: #f4f4f4;
+    --nero-testo: #333333;
+    --shadow: 0 10px 25px rgba(0,0,0,0.1);
 }
 
-/* Correzione allineamento icona per il bottone del menu */
-.btn-login {
-    display: inline-flex !important;
-    align-items: center;
-    gap: 5px;
-    white-space: nowrap;
+/* RESET E BASE  */
+body {
+    margin: 0;
+    padding: 0;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: var(--grigio-chiaro);
+    color: var(--nero-testo);
 }
 
-/* --- FORM LOGIN --- */
+/* LAYOUT LOGIN  */
 .container-login {
     display: flex;
     justify-content: center;
     align-items: center;
-    min-height: 70vh;
+    min-height: 80vh;
     padding: 20px;
 }
 
@@ -28,7 +29,7 @@
     background: var(--bianco);
     padding: 40px;
     border-radius: 12px;
-    box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+    box-shadow: var(--shadow);
     width: 100%;
     max-width: 450px;
     border-top: 5px solid var(--verde-squadra);
@@ -37,39 +38,104 @@
 .portale-tifoso h2 {
     color: var(--verde-squadra);
     text-align: center;
-    margin-bottom: 20px;
+    margin-bottom: 25px;
     text-transform: uppercase;
+    letter-spacing: 1px;
 }
 
-.tab-buttons { display: flex; gap: 10px; margin-bottom: 20px; }
-.tab-btn { flex: 1; padding: 10px; border: none; background: #eee; cursor: pointer; font-weight: bold; border-radius: 4px; }
-.tab-btn.active { background: var(--verde-squadra); color: var(--bianco); }
+/* TAB BUTTONS  */
+.tab-buttons { 
+    display: flex; 
+    gap: 10px; 
+    margin-bottom: 25px; 
+}
 
-.form-group { margin-bottom: 15px; }
-.form-group label { display: block; margin-bottom: 5px; font-weight: bold; color: #333; }
-.form-group input { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 4px; }
+.tab-btn { 
+    flex: 1; 
+    padding: 12px; 
+    border: none; 
+    background: #eee; 
+    cursor: pointer; 
+    font-weight: bold; 
+    border-radius: 6px; 
+    transition: 0.3s;
+}
 
-.btn-primary {
+.tab-btn.active { 
+    background: var(--verde-squadra); 
+    color: var(--bianco); 
+}
+
+/* FORM  */
+.form-group { 
+    margin-bottom: 18px; 
+}
+
+.form-group label { 
+    display: block; 
+    margin-bottom: 8px; 
+    font-weight: bold; 
+    color: var(--nero-testo); 
+}
+
+.form-group input { 
+    width: 100%; 
+    padding: 12px; 
+    border: 1px solid #ccc; 
+    border-radius: 6px; 
+    box-sizing: border-box; 
+    transition: border-color 0.3s;
+}
+
+.form-group input:focus {
+    border-color: var(--verde-squadra);
+    outline: none;
+}
+
+/* PULSANTI  */
+.btn-primary, .btn-submit {
     width: 100%;
-    background-color: var(--bianco); /* Sfondo diventato bianco */
-    color: var(--verde-squadra) !important; /* Scritta verde */
-    border: 2px solid var(--verde-squadra); /* Aggiunto un bordino per farlo staccare */
-    padding: 12px;
+    background-color: var(--bianco); 
+    color: var(--verde-squadra) !important; 
+    border: 2px solid var(--verde-squadra); 
+    padding: 14px;
     font-weight: bold;
-    border-radius: 4px;
+    border-radius: 6px;
     cursor: pointer;
     text-transform: uppercase;
     margin-top: 10px;
     transition: 0.3s;
+    display: block;
+    text-align: center;
+    text-decoration: none;
 }
 
-.btn-primary:hover { 
-    background-color: var(--verde-squadra); /* Al passaggio del mouse si inverte */
+.btn-primary:hover, .btn-submit:hover { 
+    background-color: var(--verde-squadra); 
     color: var(--bianco) !important; 
     transform: translateY(-2px); 
+    box-shadow: 0 5px 15px rgba(46, 125, 50, 0.3);
 }
 
-/* --- BACHECA CURVA --- */
+/* Classi specifiche per distinguere i colori se vuoi  */
+.btn-reg {
+    border-color: var(--nero-testo);
+    color: var(--nero-testo) !important;
+}
+.btn-reg:hover {
+    background-color: var(--nero-testo);
+}
+
+.btn-reset {
+    border-color: var(--oro-squadra);
+    color: #997a00 !important; /* Un oro più scuro per leggibilità su bianco */
+}
+.btn-reset:hover {
+    background-color: var(--oro-squadra);
+    color: var(--nero-testo) !important;
+}
+
+/* BACHECA CURVA  */
 .container-curva {
     display: flex;
     justify-content: center;
@@ -96,55 +162,35 @@
     margin-bottom: 20px;
     box-shadow: 0 4px 15px rgba(0,0,0,0.05);
     border-top: 4px solid var(--verde-squadra);
+    transition: transform 0.2s;
 }
 
-.profilo-riepilogo h3 {
-    color: var(--verde-squadra);
-    margin-top: 0;
-    margin-bottom: 15px;
+.messaggio:hover { 
+    transform: scale(1.01); 
 }
 
-.banner-ospite {
-    background-color: var(--verde-squadra);
-    color: var(--bianco);
-    padding: 20px;
-    border-radius: 8px;
-    text-align: center;
-    margin-bottom: 30px;
+.autore-info { 
+    border-bottom: 1px solid #eee; 
+    padding-bottom: 10px; 
+    margin-bottom: 10px; 
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
 }
 
-/* 1. Stile base per eventuali link di testo dentro al banner */
-.banner-ospite p a { 
-    color: var(--oro-squadra); 
-    font-weight: bold; 
-    text-decoration: none; 
-}
-.banner-ospite p a:hover { 
-    text-decoration: underline; 
+.autore-info strong { 
+    color: var(--verde-squadra); 
+    font-size: 1.1em; 
 }
 
-/* Il bottone rimane bianco, fa solo un piccolo salto con l'ombra */
-.banner-ospite .btn-primary:hover {
-    background-color: var(--bianco);
-    color: var(--verde-squadra) !important; 
-    border-color: var(--verde-squadra);
-    transform: translateY(-3px);
-    box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+.testo-messaggio { 
+    color: var(--nero-testo); 
+    font-size: 1.1em; 
+    margin-top: 10px; 
+    line-height: 1.5;
 }
 
-
-.bacheca-messaggi h3 {
-    border-bottom: 2px solid var(--oro-squadra);
-    display: inline-block;
-    padding-bottom: 5px;
-}
-
-.messaggio:hover { transform: scale(1.01); }
-.autore-info { border-bottom: 1px solid #eee; padding-bottom: 10px; margin-bottom: 10px; }
-.autore-info strong { color: var(--verde-squadra); font-size: 1.1em; }
-.testo-messaggio { color: #333; font-size: 1.1em; margin-top: 10px; }
-
-/* --- BADGE E BOTTONI CURVA --- */
+/* BADGES  */
 .badge {
     padding: 5px 12px;
     border-radius: 20px;
@@ -157,16 +203,43 @@
 .admin { background-color: #cc0000; color: white; }
 .tifoso { background-color: var(--verde-squadra); color: white; }
 
+/* MESSAGGI DI STATO  */
+.msg {
+    padding: 10px;
+    border-radius: 4px;
+    text-align: center;
+    margin-bottom: 15px;
+    font-weight: bold;
+}
+.msg.error { color: #c62828; background: #ffeeb2; border: 1px solid #c62828; }
+.msg.success { color: #2e7d32; background: #e8f5e9; border: 1px solid #2e7d32; }
+
+.text-center { text-align: center; }
+.link-alt { color: #666; font-size: 0.9em; text-decoration: underline; }
+
+/* LOGOUT  */
 .btn-logout {
     display: inline-block;
-    color: #333;
+    color: var(--nero-testo);
     background-color: var(--oro-squadra);
     text-decoration: none;
     font-weight: bold;
     text-transform: uppercase;
-    font-size: 0.9em;
-    padding: 10px 15px;
+    font-size: 0.85em;
+    padding: 10px 18px;
     border-radius: 6px;
     transition: all 0.3s ease;
 }
-.btn-logout:hover { background-color: #e6b800; transform: translateY(-2px); }
+.btn-logout:hover { 
+    background-color: #e6b800; 
+    transform: translateY(-2px); 
+}
+
+@media (max-width: 480px) {
+    .portale-tifoso {
+        padding: 20px;
+    }
+    .tab-btn {
+        font-size: 0.9em;
+    }
+}

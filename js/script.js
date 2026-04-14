@@ -52,10 +52,8 @@ function validaRegistrazione() {
     return true;
 }
 
-// =========================================================
 // OGGETTO JSON-LIKE: Coordinate dei moduli in campo
 // y = verticale (%), x = orizzontale (%), l = linea, o = ordine
-// =========================================================
 const schemi = {
     "4-4-2": [
         {y:92, x:50, l:1, o:1}, {y:75, x:15, l:2, o:1}, {y:75, x:38, l:2, o:2}, {y:75, x:62, l:2, o:3}, {y:75, x:85, l:2, o:4},
@@ -68,12 +66,15 @@ const schemi = {
     "3-5-2": [
         {y:92, x:50, l:1, o:1}, {y:75, x:25, l:2, o:1}, {y:75, x:50, l:2, o:2}, {y:75, x:75, l:2, o:3},
         {y:45, x:10, l:3, o:1}, {y:45, x:30, l:3, o:2}, {y:45, x:50, l:3, o:3}, {y:45, x:70, l:3, o:4}, {y:45, x:90, l:3, o:5}, {y:15, x:35, l:5, o:1}, {y:15, x:65, l:5, o:2}
+    ],
+    "4-3-1-2": [
+        {y:92, x:50, l:1, o:1}, // 1 Portiere
+        {y:75, x:15, l:2, o:1}, {y:75, x:38, l:2, o:2}, {y:75, x:62, l:2, o:3}, {y:75, x:85, l:2, o:4}, // 4 Difensori
+        {y:50, x:25, l:3, o:1}, {y:50, x:50, l:3, o:2}, {y:50, x:75, l:3, o:3}, // 3 Centrocampisti (leggermente arretrati)
+        {y:32, x:50, l:4, o:1}, // 1 Trequartista (Linea 4 aggiunta per distanziarlo da centrocampo e attacco)
+        {y:15, x:35, l:5, o:1}, {y:15, x:65, l:5, o:2} // 2 Attaccanti
     ]
 };
-
-// =========================================================
-// FUNZIONI JAVASCRIPT
-// =========================================================
 
 function renderCampo() {
     const pitch = document.getElementById('pitch'); 

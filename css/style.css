@@ -1,11 +1,9 @@
-/* ==========================================================================
-   1. COLORI E VARIABILI 
-   ========================================================================== */
 :root {
     --verde-squadra: #009444; 
     --verde-chiaro: #00b353;  
     --bianco: #ffffff;
     --sfondo-grigio: #f4f4f4; 
+    --rosso-live: #ff4444;
 }
 
 * { 
@@ -21,46 +19,51 @@ body {
     overflow-x: hidden; 
 }
 
-/* ==========================================================================
-   2. NUOVO HEADER (Logo a Sinistra, Menu a Destra)
-   ========================================================================== */
+/*  HEADER & NAVIGATION  */
 .main-header {
     background-color: var(--verde-squadra);
     color: var(--bianco);
     padding: 10px 0;
     border-bottom: 3px solid var(--bianco);
     box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    position: sticky;
+    top: 0;
+    z-index: 1000;
 }
 
 .header-container {
     max-width: 1200px;
     margin: 0 auto;
     display: flex;
-    justify-content: space-between; /* Spinge il logo a sx e il menu a dx */
+    justify-content: space-between; 
     align-items: center;
     padding: 0 20px;
 }
 
 .logo a {
-    display: flex;
+    display: inline-flex;
     align-items: center;
-    gap: 12px;
+    gap: 15px;
     text-decoration: none;
     color: white;
     font-weight: 800;
     font-size: 22px;
     text-transform: uppercase;
+    white-space: nowrap;
+    transition: transform 0.3s ease;
 }
 
+.logo a:hover { transform: scale(1.02); }
+
 .logo-img {
-    height: 50px; /* Regola questa altezza per il tuo logo */
+    height: 50px; 
     width: auto;
 }
 
 .main-nav ul {
     list-style: none;
     display: flex;
-    gap: 15px;
+    gap: 10px;
     align-items: center;
 }
 
@@ -70,24 +73,47 @@ body {
     font-weight: 600;
     font-size: 14px;
     padding: 8px 12px;
-    transition: 0.3s;
-    border-radius: 4px;
+    transition: all 0.3s ease;
+    border-radius: 8px;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    white-space: nowrap;
 }
 
-.main-nav a:hover:not(.btn-login) {
-    background: rgba(255,255,255,0.1);
+.main-nav a:hover {
+    background: rgba(255,255,255,0.2);
+    transform: translateY(-2px);
 }
 
-.btn-login {
-    background: white;
-    color: var(--verde-squadra) !important;
-    font-weight: bold !important;
-    border-radius: 5px;
+/* LIVE STATUS */
+.nav-link-live {
+    color: #ffbaba !important; 
+    font-weight: 900 !important;
 }
 
-/* ==========================================================================
-   3. HERO SECTION (Foto Squadra Full Width)
-   ========================================================================== */
+.nav-link-live:hover {
+    background-color: rgba(255, 68, 68, 0.2) !important; 
+    color: #ffffff !important;
+}
+
+.nav-live-dot {
+    display: inline-block;
+    width: 10px;
+    height: 10px;
+    background-color: var(--rosso-live);
+    border-radius: 50%;
+    animation: pulse-red-nav 1.5s infinite;
+    flex-shrink: 0;
+}
+
+@keyframes pulse-red-nav {
+    0% { box-shadow: 0 0 0 0 rgba(255, 68, 68, 0.7); }
+    70% { box-shadow: 0 0 0 6px rgba(255, 68, 68, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(255, 68, 68, 0); }
+}
+
+/* HERO HOME */
 .hero-home {
     width: 100%;
     height: 75vh; 
@@ -105,7 +131,7 @@ body {
 .hero-overlay {
     position: absolute;
     top: 0; left: 0; width: 100%; height: 100%;
-    background: rgba(0,0,0,0.5); /* Scurisce la foto per far leggere il titolo */
+    background: rgba(0,0,0,0.5);
 }
 
 .hero-content {
@@ -127,15 +153,11 @@ body {
     text-transform: uppercase;
 }
 
-/* ==========================================================================
-   4. FIX CONTENITORE E BENVENUTO
-   ========================================================================== */
+/* CONTENT AREA */
 .content-area {
-    background: transparent !important;
-    box-shadow: none !important;
-    max-width: 100% !important;
-    padding: 0 !important;
-    margin: 0 !important;
+    background: transparent;
+    padding: 0;
+    margin: 0;
 }
 
 .home-welcome {
@@ -148,13 +170,12 @@ body {
     box-shadow: 0 4px 20px rgba(0,0,0,0.08);
 }
 
-.pulsanti-home { display: flex; gap: 20px; justify-content: center; margin-top: 30px; }
-.btn-primary { background: var(--verde-squadra); color: white; padding: 15px 30px; text-decoration: none; font-weight: bold; border-radius: 5px; }
-.btn-secondary { background: #333; color: white; padding: 15px 30px; text-decoration: none; font-weight: bold; border-radius: 5px; }
+/*  PULSANTI  */
+.btn-primary { background: var(--verde-squadra); color: white; padding: 15px 30px; text-decoration: none; font-weight: bold; border-radius: 5px; transition: 0.3s; }
+.btn-secondary { background: #333; color: white; padding: 15px 30px; text-decoration: none; font-weight: bold; border-radius: 5px; transition: 0.3s; }
+.btn-primary:hover, .btn-secondary:hover { opacity: 0.9; transform: scale(1.05); }
 
-/* ==========================================================================
-   5. BOX MATCH E CALENDARIO
-   ========================================================================== */
+/*  GRID BOXES */
 .home-boxes-container {
     display: flex;
     gap: 24px;
@@ -184,103 +205,11 @@ body {
     margin-bottom: 20px;
 }
 
-.match-vs-display { display: flex; align-items: center; justify-content: space-around; padding: 20px 0; }
-.team-name { font-size: 24px; font-weight: bold; }
-.vs-label { font-size: 26px; font-weight: bold; color: #ddd; }
-
-/* Data Ingrandita */
-.big-date { font-size: 24px; font-weight: bold; color: #333; display: block; margin-bottom: 5px; }
-.stadium-label { font-size: 16px; color: #888; }
-
-.cal-row { padding: 12px 0; border-bottom: 1px solid #f0f0f0; }
-.cal-date { font-size: 11px; color: #aaa; margin-bottom: 4px; }
-.cal-teams { display: flex; justify-content: space-between; font-size: 14px; }
-.is-morra { color: var(--verde-squadra); font-weight: bold; }
-
-/* ==========================================================================
-   6. FOOTER
-   ========================================================================== */
+/* FOOTER */
 .main-footer {
     background: var(--verde-squadra);
     color: white;
     text-align: center;
     padding: 50px 20px;
     margin-top: 50px;
-}
-/* Allinea il container principale orizzontalmente */
-.header-container {
-    display: flex !important;
-    flex-direction: row !important;
-    align-items: center !important;
-    justify-content: space-between !important;
-    width: 100%;
-}
-
-/* Logo e testo sulla stessa riga */
-.logo a {
-    display: inline-flex !important;
-    flex-direction: row !important;
-    align-items: center !important;
-    gap: 15px !important;
-    white-space: nowrap !important;
-    transition: transform 0.3s ease;
-}
-
-.logo a:hover { transform: scale(1.02); }
-
-/* Forza la lista dei link in orizzontale */
-.main-nav ul {
-    display: flex !important;
-    flex-direction: row !important;
-    align-items: center !important;
-    gap: 10px !important;
-    margin: 0 !important;
-    padding: 0 !important;
-    list-style: none !important;
-}
-
-/* Stile base dei link: in riga, con transizione fluida */
-.main-nav a {
-    display: inline-flex !important;
-    flex-direction: row !important;
-    align-items: center !important;
-    gap: 6px !important;
-    white-space: nowrap !important; 
-    padding: 8px 12px !important;
-    border-radius: 8px !important;
-    transition: all 0.3s ease !important;
-    text-decoration: none;
-}
-
-/* EFFETTO HOVER */
-.main-nav a:hover {
-    background-color: rgba(255, 255, 255, 0.2) !important;
-    transform: translateY(-2px) !important;
-}
-
-/* --- ANIMAZIONE PALLINO ROSSO LIVE --- */
-@keyframes pulse-red-nav {
-    0% { box-shadow: 0 0 0 0 rgba(255, 68, 68, 0.7); }
-    70% { box-shadow: 0 0 0 6px rgba(255, 68, 68, 0); }
-    100% { box-shadow: 0 0 0 0 rgba(255, 68, 68, 0); }
-}
-
-.nav-live-dot {
-    display: inline-block !important;
-    width: 10px !important;
-    height: 10px !important;
-    background-color: #ff4444 !important;
-    border-radius: 50% !important;
-    animation: pulse-red-nav 1.5s infinite !important;
-    flex-shrink: 0 !important; /* Impedisce al pallino di deformarsi */
-}
-
-.nav-link-live {
-    color: #ffbaba !important; 
-    font-weight: 900 !important;
-}
-
-.nav-link-live:hover {
-    background-color: rgba(255, 68, 68, 0.2) !important; 
-    color: #ffffff !important;
 }

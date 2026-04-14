@@ -1,7 +1,3 @@
-/* ==========================================
-   STYLE4.CSS - TEMA BIANCOVERDE LUPI 🐺
-   ========================================== */
-
 /* Container Principale */
 .match-center-wrapper {
     background-color: #0d1117;
@@ -57,13 +53,12 @@
     position: relative;
     box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6);
     overflow: hidden;
-    margin-top: 40px; /* Ora scende verso il basso, separandosi dall'header! */
+    margin-top: 40px;
     max-width: 600px;
     margin-left: auto;
     margin-right: auto;
 }
 
-/* Opzionale: Aggiungi un po' di spazio in cima anche al contenitore generale */
 .match-center-wrapper {
     background-color: #0d1117;
     color: #ffffff;
@@ -73,7 +68,7 @@
     font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
 }
 
-/* Segnature Campo (Linee bianche trasparenti) */
+/* Segnature Campo (Linee bianche trasparenti)*/
 .pitch-line-v { 
     position: absolute; top: 0; bottom: 0; left: 50%; width: 2px; 
     background: rgba(255, 255, 255, 0.15); 
@@ -135,7 +130,7 @@
     white-space: nowrap;
 }
 
-/* Sezione Tabellino Lista */
+/*Tabellino Lista */
 .match-info-card {
     background-color: #161b22;
     padding: 30px;
@@ -190,7 +185,6 @@
     text-transform: uppercase;
 }
 
-/* Pulsante Indietro */
 .btn-back {
     display: inline-block;
     text-decoration: none;
@@ -209,13 +203,11 @@
     color: #ffffff;
 }
 
-/* Animazioni */
 @keyframes fadeInUp {
     from { opacity: 0; transform: translateY(20px); }
     to { opacity: 1; transform: translateY(0); }
 }
 
-/* Responsive */
 @media (max-width: 600px) {
     .score-board { font-size: 1.6rem; gap: 15px; }
     .score-box { font-size: 1.4rem; padding: 8px 15px; }
@@ -235,11 +227,6 @@
 .bench-list { color: #888; font-size: 0.85rem; font-style: italic; margin-top: 10px; }
 .error-msg { text-align: center; padding: 50px; color: #ff5252; }
 
-/* ==========================================
-   STILI AGGIUNTIVI PER IL MATCH CENTER
-   ========================================== */
-
-/* Griglia Sostituzioni e Panchina */
 .match-details-grid {
     display: grid; 
     grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); 
@@ -255,24 +242,20 @@
     border-radius: 10px;
 }
 
-/* Sostituzioni */
 .subs-card { border-top: 3px solid #4caf50; }
 .subs-title { color: #4caf50; margin-bottom: 15px; }
 .sub-row { margin-bottom: 10px; border-bottom: 1px solid #333; padding-bottom: 5px; }
 .sub-in { color: #4caf50; font-weight: bold; }
 .sub-out { color: #f44336; font-size: 0.8rem; }
 
-/* Panchina */
 .bench-card { border-top: 3px solid #8b949e; }
 .bench-title { color: #8b949e; margin-bottom: 15px; }
 .bench-list { list-style: none; padding: 0; }
 .bench-item { margin-bottom: 8px; font-size: 0.9rem; color: white; }
 .bench-icon { opacity: 0.5; }
 
-/* Messaggi vuoti */
 .empty-msg { color: gray; font-size: 0.9rem; }
 
-/* Messaggio di blocco (Utenti non loggati) */
 .login-lock-message {
     text-align: center; 
     margin: 60px auto; 
@@ -295,7 +278,6 @@
     display: inline-block;
 }
 
-/* Pulsante per tornare al calendario */
 .back-link-container {
     text-align: center; 
     margin-top: 30px; 

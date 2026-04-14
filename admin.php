@@ -10,12 +10,8 @@ if (!isset($_SESSION['ruolo']) || $_SESSION['ruolo'] !== 'admin') {
 // Determina quale pagina mostrare (default: dashboard)
 $page = isset($_GET['page']) ? $_GET['page'] : 'dashboard';
 
-// ==========================================
-// 1. GESTIONE LOGICA E RICHIESTE (POST/AJAX)
-// ==========================================
-
 if ($page === 'classifica') {
-    $msg_classifica = ""; // Variabile per i messaggi di conferma
+    $msg_classifica = "";
 
     // Aggiornamento Classifica
     if (isset($_POST['update_classifica'])) {
@@ -56,7 +52,7 @@ if ($page === 'classifica') {
     $resM = pg_query_params($db, "SELECT modulo FROM formazioni_setup WHERE id_partita = $1", [$id_partita]);
     $modulo_attuale = (pg_num_rows($resM) > 0) ? trim(pg_fetch_result($resM, 0, 'modulo')) : "4-4-2";
 
-    // --- LOGICA AJAX ---
+    //LOGICA AJAX
     if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['ajax_action'])) {
         header('Content-Type: application/json');
         $id_g = (int)($_POST['id_g'] ?? 0);
@@ -144,18 +140,15 @@ if ($page === 'classifica') {
         nome ASC");
 }
 
-// ==========================================
-// 2. OUTPUT HTML
-// ==========================================
 
-$css_extra = 'styleAdmin.css'; // Carichiamo il CSS specifico dell'admin
+$css_extra = 'styleAdmin.css'; 
 include 'includes/header.php';
 
 if ($page === 'dashboard'): 
 ?>
 
     <div style="text-align:center; margin-top:40px;">
-        <h1 style="color:white;">Pannello di Controllo Admin 🐺</h1>
+        <h1 style="color:black;">Pannello di Controllo Admin 🐺</h1>
         <p style="color:#8b949e;">Benvenuto Comandante, cosa vogliamo gestire oggi?</p>
     </div>
 
@@ -269,11 +262,12 @@ if ($page === 'dashboard'):
         <main class="field-area">
             <div style="background:var(--panel); padding:10px; border-radius:8px;">
                 Modulo: 
-                <select id="modulo-select" onchange="cambiaModulo(this.value)">
-                    <option value="4-4-2" <?= $modulo_attuale=='4-4-2'?'selected':'' ?>>4-4-2</option>
-                    <option value="4-3-3" <?= $modulo_attuale=='4-3-3'?'selected':'' ?>>4-3-3</option>
-                    <option value="3-5-2" <?= $modulo_attuale=='3-5-2'?'selected':'' ?>>3-5-2</option>
-                </select>
+            <select id="modulo-select" onchange="cambiaModulo(this.value)">
+                <option value="4-4-2" <?= $modulo_attuale=='4-4-2'?'selected':'' ?>>4-4-2</option>
+                <option value="4-3-3" <?= $modulo_attuale=='4-3-3'?'selected':'' ?>>4-3-3</option>
+                <option value="3-5-2" <?= $modulo_attuale=='3-5-2'?'selected':'' ?>>3-5-2</option>
+                <option value="4-3-1-2" <?= $modulo_attuale=='4-3-1-2'?'selected':'' ?>>4-3-1-2</option>
+            </select>
             </div>
             <div class="soccer-pitch" id="pitch"></div>
         </main>
@@ -341,7 +335,7 @@ if ($page === 'dashboard'):
         ?>
     ];
     </script>
-    <script src="js/script.js"></script>
+    <script src="js/script.js?v=2"></script>
 
 <?php elseif ($page === 'rosa'): ?>
 

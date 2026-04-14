@@ -4,11 +4,11 @@ require_once 'includes/db_connect.php';
 $id_partita = isset($_GET['id']) ? (int)$_GET['id'] : 0;
 include 'includes/header.php';
 
-// 1. Recupero Dati della Partita
+// Recupero Dati della Partita
 $resP = pg_query_params($db, "SELECT *, to_char(data_match, 'DD/MM/YYYY HH24:MI') as data_f FROM public.partite WHERE id = $1", [$id_partita]);
 $match = pg_fetch_assoc($resP);
 
-// 2. Recupero Eventi dalla tabella cronaca_live
+// Recupero Eventi dalla tabella cronaca_live
 $resEv = pg_query_params($db, "SELECT tipo_evento, testo FROM cronaca_live WHERE id_partita = $1", [$id_partita]);
 $eventi_match = ['goal' => [], 'card' => [], 'red' => []];
 
@@ -18,9 +18,8 @@ if ($resEv) {
     }
 }
 
-/**
- * FUNZIONE PER ASSEGNARE GLI EVENTI AI GIOCATORI
- */
+ // FUNZIONE PER ASSEGNARE GLI EVENTI AI GIOCATORI
+ 
 function ottieniEventiGiocatore($nome_completo, $eventi_match) {
     $nome_lower = strtolower($nome_completo);
     $parts = explode(' ', $nome_lower);
@@ -56,18 +55,18 @@ function ottieniEventiGiocatore($nome_completo, $eventi_match) {
     return $output_html;
 }
 
-// Carichiamo i dati solo se l'utente è loggato per risparmiare risorse
+// Carichiamo i dati solo se l'utente è loggato
 if (isset($_SESSION['id_utente'])) {
     // 3. Titolari - CORRETTO CON ORDINE ORIZZONTALE
     $resG = pg_query_params($db, "SELECT g.id, g.nome, g.ruolo, fg.linea, fg.ordine_orizzontale FROM formazione_giocatori fg JOIN giocatori g ON fg.id_giocatore = g.id WHERE fg.id_partita = $1 ORDER BY fg.linea ASC, fg.ordine_orizzontale ASC", [$id_partita]);
     $formazione = [];
     while ($row = pg_fetch_assoc($resG)) { $formazione[$row['linea']][] = $row; }
 
-    // 4. Sostituzioni
+    // Sostituzioni
     $resS = pg_query_params($db, "SELECT ge.nome as entra, gs.nome as esce FROM sostituzioni s JOIN giocatori ge ON s.id_entra = ge.id JOIN giocatori gs ON s.id_esce = gs.id WHERE s.id_partita = $1", [$id_partita]);
     $cambi = pg_fetch_all($resS) ?: [];
 
-    // 5. Panchina
+    // Panchina
     $resB = pg_query_params($db, "SELECT g.nome FROM panchina p JOIN giocatori g ON p.id_giocatore = g.id WHERE p.id_partita = $1 AND p.id_giocatore NOT IN (SELECT id_entra FROM sostituzioni WHERE id_partita = $1)", [$id_partita]);
     $disposizione = pg_fetch_all($resB) ?: [];
 }

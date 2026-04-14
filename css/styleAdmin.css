@@ -1,15 +1,10 @@
-/* =========================================
-   VARIABILI GLOBALI ADMIN
-   ========================================= */
 :root { 
     --v-morra: #2e7d32; 
     --dark: #0d1117; 
     --panel: #161b22; 
 }
 
-/* =========================================
-   1. STILI DASHBOARD
-   ========================================= */
+/*Dashboard*/
 .admin-dashboard {
     max-width: 1200px; 
     margin: 50px auto; 
@@ -55,9 +50,7 @@
     font-size: 0.9rem; 
 }
 
-/* =========================================
-   2. STILI GESTIONE FORMAZIONE
-   ========================================= */
+/* Gestione Formazione*/
 .admin-layout { 
     display: grid; 
     grid-template-columns: 260px 1fr 280px; 
@@ -219,9 +212,7 @@
     border: none; 
 }
 
-/* =========================================
-   3. STILI GESTIONE ROSA
-   ========================================= */
+/* Gestione Rosa */
 .admin-stats-container { 
     max-width: 1000px; 
     margin: 40px auto; 

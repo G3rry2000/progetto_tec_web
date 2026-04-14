@@ -24,7 +24,7 @@ if (isset($_POST['submit_registrazione'])) {
 
         $_SESSION['id_utente'] = $utente['id'];
         $_SESSION['nome'] = $utente['nome'];
-        $_SESSION['ruolo'] = $utente['ruolo'];
+        $_SESSION['ruolo'] = trim($utente['ruolo']);
         
         header("Location: index.php");
         exit;
@@ -33,33 +33,28 @@ if (isset($_POST['submit_registrazione'])) {
     }
 }
 
-// --- LOGICA RECUPERO PASSWORD (NUOVA) ---
+// --- LOGICA RECUPERO PASSWORD ---
 if (isset($_POST['submit_recupero'])) {
     $email = $_POST['email_recupero'];
     $giocatore_sicurezza = $_POST['giocatore_sicurezza'];
     $nuova_password = $_POST['nuova_password'];
 
-    // Cerchiamo l'utente tramite email
     $query_check = "SELECT id, giocatore_preferito FROM public.utenti WHERE email = $1";
     $res_check = pg_query_params($db, $query_check, array($email));
 
     if ($res_check && pg_num_rows($res_check) > 0) {
         $utente = pg_fetch_assoc($res_check);
-        
-        // Controlliamo se la risposta di sicurezza coincide (ignorando maiuscole/minuscole e spazi)
         if (strtolower(trim($utente['giocatore_preferito'])) === strtolower(trim($giocatore_sicurezza))) {
             $nuovo_hash = password_hash($nuova_password, PASSWORD_BCRYPT);
-            
             $query_update = "UPDATE public.utenti SET password = $1 WHERE email = $2";
             $res_update = pg_query_params($db, $query_update, array($nuovo_hash, $email));
-            
             if ($res_update) {
-                $msg_successo = "Password aggiornata con successo! Ora puoi accedere.";
+                $msg_successo = "Password aggiornata! Ora puoi accedere.";
             } else {
-                $errore_recupero = "Errore durante l'aggiornamento della password.";
+                $errore_recupero = "Errore durante l'aggiornamento.";
             }
         } else {
-            $errore_recupero = "Risposta di sicurezza errata. Giocatore preferito non corrispondente.";
+            $errore_recupero = "Risposta di sicurezza errata.";
         }
     } else {
         $errore_recupero = "Nessun account trovato con questa email.";
@@ -76,23 +71,19 @@ if (isset($_POST['submit_login'])) {
     
     if ($res_login) {
         $utente = pg_fetch_assoc($res_login);
-
         if ($utente && password_verify($password_inserita, $utente['password'])) {
             $_SESSION['id_utente'] = $utente['id'];
             $_SESSION['nome'] = $utente['nome'];
             $_SESSION['ruolo'] = trim($utente['ruolo']);
 
-            if ($_SESSION['ruolo'] === 'admin') {
-                header("Location: admin.php"); 
-            } else {
-                header("Location: index.php"); 
-            }
+            $redirect = ($_SESSION['ruolo'] === 'admin') ? 'admin.php' : 'index.php';
+            header("Location: $redirect"); 
             exit;
         } else {
-            $errore_login = "Email o password errati, riprova!";
+            $errore_login = "Email o password errati!";
         }
     } else {
-        $errore_login = "Errore nella comunicazione con il database.";
+        $errore_login = "Errore di connessione al database.";
     }
 }
 
@@ -106,115 +97,113 @@ if (isset($_GET['logout'])) {
 include 'includes/header.php';
 ?>
 
-<main class="container-login" style="max-width: 500px; margin: 50px auto; padding: 20px; background: #f9f9f9; border-radius: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); font-family: sans-serif;">
+<?php 
+    $css_path = 'css/style2.css';
+    $version = file_exists($css_path) ? filemtime($css_path) : '1.0';
+?>
+<link rel="stylesheet" href="<?= $css_path ?>?v=<?= $version ?>">
+
+<main class="container-login">
     <section class="portale-tifoso">
-        <h2 style="text-align: center; color: green;">Portale Lupo Biancoverde 🐺</h2>
+        <h2>Portale Lupo Biancoverde 🐺</h2>
         
-        <div class="tab-buttons" style="display: flex; justify-content: space-around; margin-bottom: 20px;">
-            <button id="btnLogin" onclick="cambiaTab('login')" style="cursor:pointer; padding: 10px; border:none; background:none; border-bottom: 2px solid green; font-weight:bold;">Accesso</button>
-            <button id="btnRegistrati" onclick="cambiaTab('registrati')" style="cursor:pointer; padding: 10px; border:none; background:none; font-weight:bold;">Registrati</button>
+        <div class="tab-buttons">
+            <button id="btnLogin" class="tab-btn active" onclick="cambiaTab('login')">Accesso</button>
+            <button id="btnRegistrati" class="tab-btn" onclick="cambiaTab('registrati')">Registrati</button>
         </div>
 
-        <div id="tab-login">
-            <?php if($errore_login) echo "<p style='color:red; text-align:center;'>$errore_login</p>"; ?>
-            <?php if($msg_successo) echo "<p style='color:green; text-align:center; font-weight:bold;'>$msg_successo</p>"; ?>
-            <form action="login.php" method="POST">
-                <div style="margin-bottom:15px;">
-                    <label>Email:</label><br>
-                    <input type="email" name="email" required style="width:95%; padding:8px;">
-                </div>
-                <div style="margin-bottom:15px;">
-                    <label>Password:</label><br>
-                    <input type="password" name="password" required style="width:95%; padding:8px;">
-                </div>
-                <button type="submit" name="submit_login" style="width:100%; padding:10px; background:green; color:white; border:none; border-radius:5px; cursor:pointer; font-weight:bold;">ENTRA</button>
-            </form>
-            <p style="text-align: center; margin-top: 15px;">
-                <a href="#" onclick="cambiaTab('recupero'); return false;" style="color: #555; font-size: 0.9em; text-decoration: underline;">Password dimenticata?</a>
-            </p>
-        </div>
-
-        <div id="tab-registrati" style="display:none;">
-            <?php if($errore_reg) echo "<p style='color:red; text-align:center;'>$errore_reg</p>"; ?>
-            <form action="login.php" method="POST">
-                <div style="margin-bottom:10px;">
-                    <label>Nome:</label><br>
-                    <input type="text" name="nome" required style="width:95%; padding:8px;">
-                </div>
-                <div style="margin-bottom:10px;">
-                    <label>Email:</label><br>
-                    <input type="email" name="email" required style="width:95%; padding:8px;">
-                </div>
-                <div style="margin-bottom:10px;">
-                    <label>Password:</label><br>
-                    <input type="password" name="password" required style="width:95%; padding:8px;">
-                </div>
-                <div style="margin-bottom:10px;">
-                    <label>Giocatore Preferito (Usato per il reset della password):</label><br>
-                    <input type="text" name="giocatore" required style="width:95%; padding:8px;">
-                </div>
-                <button type="submit" name="submit_registrazione" style="width:100%; padding:10px; background:#333; color:white; border:none; border-radius:5px; cursor:pointer;">REGISTRATI</button>
-            </form>
-        </div>
-
-        <div id="tab-recupero" style="display:none;">
-            <h3 style="text-align:center; color:#333;">Recupera Password</h3>
-            <p style="font-size:0.85em; color:#666; text-align:center;">Rispondi alla domanda di sicurezza per creare una nuova password.</p>
-            
-            <?php if($errore_recupero) echo "<p style='color:red; text-align:center;'>$errore_recupero</p>"; ?>
+        <div id="tab-login" class="tab-content">
+            <?php if($errore_login) echo "<p class='msg error'>$errore_login</p>"; ?>
+            <?php if($msg_successo) echo "<p class='msg success'>$msg_successo</p>"; ?>
             
             <form action="login.php" method="POST">
-                <div style="margin-bottom:10px;">
-                    <label>La tua Email:</label><br>
-                    <input type="email" name="email_recupero" required style="width:95%; padding:8px;">
+                <div class="form-group">
+                    <label>Email:</label>
+                    <input type="email" name="email" placeholder="Inserisci la tua email" required>
                 </div>
-                <div style="margin-bottom:10px;">
-                    <label>Domanda: Qual è il tuo Giocatore Preferito?</label><br>
-                    <input type="text" name="giocatore_sicurezza" required style="width:95%; padding:8px;">
+                <div class="form-group">
+                    <label>Password:</label>
+                    <input type="password" name="password" placeholder="Password" required>
                 </div>
-                <div style="margin-bottom:15px;">
-                    <label>Nuova Password:</label><br>
-                    <input type="password" name="nuova_password" required style="width:95%; padding:8px;">
-                </div>
-                <button type="submit" name="submit_recupero" style="width:100%; padding:10px; background:#ff9800; color:white; border:none; border-radius:5px; cursor:pointer; font-weight:bold;">REIMPOSTA PASSWORD</button>
+                <button type="submit" name="submit_login" class="btn-submit btn-access">ENTRA</button>
             </form>
-            <p style="text-align: center; margin-top: 15px;">
-                <a href="#" onclick="cambiaTab('login'); return false;" style="color: green; font-size: 0.9em;">← Torna al Login</a>
-            </p>
+            <div class="text-center">
+                <a href="#" onclick="cambiaTab('recupero'); return false;" class="link-alt">Hai dimenticato la password?</a>
+            </div>
+        </div>
+
+        <div id="tab-registrati" class="tab-content" style="display:none;">
+            <?php if($errore_reg) echo "<p class='msg error'>$errore_reg</p>"; ?>
+            <form action="login.php" method="POST">
+                <div class="form-group">
+                    <label>Nome Completo:</label>
+                    <input type="text" name="nome" placeholder="es. Mario Rossi" required>
+                </div>
+                <div class="form-group">
+                    <label>Email:</label>
+                    <input type="email" name="email" placeholder="email@esempio.it" required>
+                </div>
+                <div class="form-group">
+                    <label>Password:</label>
+                    <input type="password" name="password" placeholder="Scegli una password sicura" required>
+                </div>
+                <div class="form-group">
+                    <label>Giocatore Preferito (Domanda di sicurezza):</label>
+                    <input type="text" name="giocatore" placeholder="La tua risposta segreta" required>
+                </div>
+                <button type="submit" name="submit_registrazione" class="btn-submit btn-reg">CREA ACCOUNT</button>
+            </form>
+        </div>
+
+        <div id="tab-recupero" class="tab-content" style="display:none;">
+            <h3>Recupera Password</h3>
+            <p class="info-text">Inserisci l'email e la risposta alla domanda di sicurezza.</p>
+            
+            <?php if($errore_recupero) echo "<p class='msg error'>$errore_recupero</p>"; ?>
+            
+            <form action="login.php" method="POST">
+                <div class="form-group">
+                    <label>Tua Email:</label>
+                    <input type="email" name="email_recupero" required>
+                </div>
+                <div class="form-group">
+                    <label>Domanda: Qual è il tuo Giocatore Preferito?</label>
+                    <input type="text" name="giocatore_sicurezza" required>
+                </div>
+                <div class="form-group">
+                    <label>Scegli Nuova Password:</label>
+                    <input type="password" name="nuova_password" required>
+                </div>
+                <button type="submit" name="submit_recupero" class="btn-submit btn-reset">AGGIORNA PASSWORD</button>
+            </form>
+            <div class="text-center">
+                <a href="#" onclick="cambiaTab('login'); return false;" class="link-back">← Torna al Login</a>
+            </div>
         </div>
     </section>
 </main>
 
 <script>
 function cambiaTab(tipo) {
-    const L = document.getElementById('tab-login');
-    const R = document.getElementById('tab-registrati');
-    const P = document.getElementById('tab-recupero');
-    const btnL = document.getElementById('btnLogin');
-    const btnR = document.getElementById('btnRegistrati');
+    const tabs = ['tab-login', 'tab-registrati', 'tab-recupero'];
+    const btns = { 'login': 'btnLogin', 'registrati': 'btnRegistrati' };
     
-    // Nascondiamo tutto di default
-    L.style.display = 'none';
-    R.style.display = 'none';
-    P.style.display = 'none';
+    // Nascondi tutto
+    tabs.forEach(tab => document.getElementById(tab).style.display = 'none');
     
-    // Resettiamo le linee verdi sui bottoni
-    btnL.style.borderBottom = 'none';
-    btnR.style.borderBottom = 'none';
+    // Rimuovi active dai bottoni principali
+    Object.values(btns).forEach(id => document.getElementById(id).classList.remove('active'));
 
-    if (tipo === 'login') {
-        L.style.display = 'block';
-        btnL.style.borderBottom = '2px solid green';
-    } else if (tipo === 'registrati') {
-        R.style.display = 'block';
-        btnR.style.borderBottom = '2px solid green';
-    } else if (tipo === 'recupero') {
-        P.style.display = 'block';
-        // Non evidenziamo i bottoni sopra per far capire che è in una schermata speciale
+    // Mostra il selezionato
+    document.getElementById('tab-' + tipo).style.display = 'block';
+    
+    // Se è uno dei due bottoni principali, aggiungi active
+    if (btns[tipo]) {
+        document.getElementById(btns[tipo]).classList.add('active');
     }
 }
 
-// Se c'è un errore nel recupero, mantieni il tab aperto dopo il ricaricamento
+// Mantieni il tab recupero se c'è un errore specifico
 <?php if(isset($_POST['submit_recupero']) && !empty($errore_recupero)): ?>
     cambiaTab('recupero');
 <?php endif; ?>

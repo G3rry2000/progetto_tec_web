@@ -11,7 +11,7 @@ if (!isset($_SESSION['id_utente'])) {
 $isAdmin = (isset($_SESSION['ruolo']) && $_SESSION['ruolo'] === 'admin');
 $msg_errore = "";
 
-// 1. IDENTIFICA LA PARTITA LIVE
+//IDENTIFICA LA PARTITA LIVE
 $id_partita = isset($_GET['id']) ? (int)$_GET['id'] : 0;
 $match_titolo = "Nessuna partita in corso";
 
@@ -30,14 +30,14 @@ if ($id_partita <= 0) {
     }
 }
 
-// 2. RECUPERA TUTTE LE PARTITE
+// RECUPERA TUTTE LE PARTITE
 $tutte_le_partite = [];
 $resTutte = pg_query($db, "SELECT id, giornata, casa, ospite FROM public.partite ORDER BY data_match ASC");
 if ($resTutte) {
     $tutte_le_partite = pg_fetch_all($resTutte) ?: [];
 }
 
-// 3. LOGICA ADMIN: AGGIUNGI O ELIMINA EVENTI
+//LOGICA ADMIN: AGGIUNGI O ELIMINA EVENTI
 if ($isAdmin && $_SERVER['REQUEST_METHOD'] === 'POST') {
     if (isset($_POST['add_event'])) {
         $minuto = trim($_POST['minuto']);
@@ -60,7 +60,7 @@ if ($isAdmin && $_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 
-// 4. RECUPERO EVENTI
+//  RECUPERO EVENTI
 $eventi = [];
 if ($id_partita > 0) {
     $resEv = pg_query_params($db, "SELECT * FROM public.cronaca_live WHERE id_partita = $1 ORDER BY id DESC", [$id_partita]);
