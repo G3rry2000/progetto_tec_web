@@ -1,20 +1,49 @@
 // Gestione dei Tab in login.php
-function cambiaTab(tabId) {
-    // Nascondi tutti i tab
-    document.getElementById('tab-login').style.display = 'none';
-    document.getElementById('tab-registrati').style.display = 'none';
+/**
+ * Gestisce lo switch tra i tab della pagina login
+ * @param {string} tipo - Il nome del tab da attivare ('login', 'registrati' o 'recupero')
+ */
+function cambiaTab(tipo) {
+    // 1. Elenco di tutti gli ID dei contenitori tab presenti nel PHP
+    const tabs = ['tab-login', 'tab-registrati', 'tab-recupero'];
     
-    // Rimuovi classe active dai bottoni
-    document.getElementById('btnLogin').classList.remove('active');
-    document.getElementById('btnRegistrati').classList.remove('active');
+    // 2. Mappatura tra il tipo e l'ID del bottone fisico nella barra superiore
+    const btns = { 
+        'login': 'btnLogin', 
+        'registrati': 'btnRegistrati' 
+    };
     
-    // Mostra il tab richiesto
-    if (tabId === 'login') {
-        document.getElementById('tab-login').style.display = 'block';
-        document.getElementById('btnLogin').classList.add('active');
+    // 3. Nascondi tutti i tab e rimuovi la visibilità
+    tabs.forEach(id => {
+        const el = document.getElementById(id);
+        if (el) {
+            el.style.display = 'none';
+        }
+    });
+    
+    // 4. Rimuovi la classe 'active' da tutti i bottoni (per resettare i colori dei tasti)
+    Object.values(btns).forEach(id => {
+        const btn = document.getElementById(id);
+        if (btn) {
+            btn.classList.remove('active');
+        }
+    });
+
+    // 5. Mostra il tab specifico richiesto
+    // Costruisce l'id (es: 'tab-' + 'registrati' = 'tab-registrati')
+    const targetTab = document.getElementById('tab-' + tipo);
+    if (targetTab) {
+        targetTab.style.display = 'block';
     } else {
-        document.getElementById('tab-registrati').style.display = 'block';
-        document.getElementById('btnRegistrati').classList.add('active');
+        console.error("Tab non trovato: tab-" + tipo);
+    }
+    
+    // 6. Se il tab cliccato ha un bottone corrispondente, lo rende attivo
+    if (btns[tipo]) {
+        const activeBtn = document.getElementById(btns[tipo]);
+        if (activeBtn) {
+            activeBtn.classList.add('active');
+        }
     }
 }
 
@@ -23,12 +52,19 @@ function validaLogin() {
     const email = document.getElementById('login-email').value;
     const erroreLabel = document.getElementById('errore-js-login');
     
+    // Reset e nascondi la label
+    erroreLabel.style.display = "none";
+    erroreLabel.textContent = "";
+
     if (!email.includes('@') || !email.includes('.')) {
-        erroreLabel.textContent = "Inserisci un indirizzo email valido.";
+        erroreLabel.textContent = "⚠ Inserisci un indirizzo email valido.";
+        erroreLabel.style.display = "block";
+        erroreLabel.style.backgroundColor = "#ffdbdb"; // Sfondo rosso chiaro
+        erroreLabel.style.color = "#a94442";           // Testo rosso scuro
+        erroreLabel.style.border = "1px solid #ebccd1";
         return false; 
     }
     
-    erroreLabel.textContent = "";
     return true; 
 }
 
@@ -41,37 +77,44 @@ function validaRegistrazione() {
     const email = emailInput.value.trim();
     const password = passwordInput.value;
 
-    // 1. Regex per Email (standard RFC 5322)
-    // Non controlla solo @ e punto, ma anche la struttura corretta
+    // Controllo per Email 
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
     // Almeno 8 caratteri, una maiuscola, una minuscola e un numero
     const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/;
-    // Reset del messaggio di errore
+    
+    // Reset del messaggio di errore e nascondi la label prima di ogni controllo
+    erroreLabel.style.display = "none";
     erroreLabel.textContent = "";
+
+    // Funzione helper per mostrare l'errore ed evitare codice ripetuto
+    const mostraErrore = (messaggio) => {
+        erroreLabel.textContent = messaggio;
+        erroreLabel.style.display = "block"; // <-- IL FIX È QUI
+        return false;
+    };
+
     // Validazione Email
     if (email === "") {
-        erroreLabel.textContent = "Il campo email è obbligatorio.";
-        return false;
+        return mostraErrore("Il campo email è obbligatorio.");
     }
     if (!emailRegex.test(email)) {
-        erroreLabel.textContent = "L'indirizzo email non è formattato correttamente.";
-        return false;
+        return mostraErrore("L'indirizzo email non è formattato correttamente.");
     }
+    
     // Validazione Password
     if (password === "") {
-        erroreLabel.textContent = "Il campo password è obbligatorio.";
-        return false;
+        return mostraErrore("Il campo password è obbligatorio.");
     }
     if (!passwordRegex.test(password)) {
-        erroreLabel.textContent = "La password deve contenere almeno 8 caratteri, una maiuscola, una minuscola e un numero.";
-        return false;
+        return mostraErrore("La password deve contenere almeno 8 caratteri, una maiuscola, una minuscola e un numero.");
     }
+    
     // Opzionale: Controllo se la password contiene l'email 
     if (password.toLowerCase().includes(email.split('@')[0].toLowerCase())) {
-        erroreLabel.textContent = "La password non può contenere parte del tuo indirizzo email.";
-        return false;
+        return mostraErrore("La password non può contenere parte del tuo indirizzo email.");
     }
+    
     return true;
 }
 
@@ -100,11 +143,17 @@ const schemi = {
 };
 
 function renderCampo() {
+    // Prima cerchi l'elemento
     const pitch = document.getElementById('pitch'); 
+    
+    // Poi controlli se esiste. Se non esiste (es. sei nella pagina login), esci
+    if (!pitch) return; 
+    
     pitch.innerHTML = '';
     
-    // Legge il modulo da "moduloAttuale" dichiarato nel PHP
-    const spots = schemi[moduloAttuale] || schemi["4-4-2"];
+    // Assicurati che moduloAttuale sia definito (dal PHP o default)
+    const modulo = (typeof moduloAttuale !== 'undefined') ? moduloAttuale : "4-4-2";
+    const spots = schemi[modulo] || schemi["4-4-2"];
     
     spots.forEach(s => {
         const div = document.createElement('div'); 
@@ -117,7 +166,11 @@ function renderCampo() {
         div.ondrop = onDrop; 
         pitch.appendChild(div);
     });
-    loadSavedPlayers();
+
+    // Carica i giocatori se la funzione esiste
+    if (typeof loadSavedPlayers === "function") {
+        loadSavedPlayers();
+    }
 }
 
 function loadSavedPlayers() {

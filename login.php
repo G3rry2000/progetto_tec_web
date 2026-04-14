@@ -6,8 +6,9 @@ $errore_login = "";
 $errore_reg = "";
 $errore_recupero = "";
 $msg_successo = "";
+$email_inserita = ""; // Per lo Sticky Form del Login
 
-// --- LOGICA REGISTRAZIONE ---
+//  LOGICA REGISTRAZIONE 
 if (isset($_POST['submit_registrazione'])) {
     $nome = htmlspecialchars($_POST['nome']);
     $email = htmlspecialchars($_POST['email']);
@@ -33,25 +34,25 @@ if (isset($_POST['submit_registrazione'])) {
     }
 }
 
-// --- LOGICA RECUPERO PASSWORD ---
+//  LOGICA RECUPERO PASSWORD 
 if (isset($_POST['submit_recupero'])) {
-    $email = $_POST['email_recupero'];
+    $email_rec = $_POST['email_recupero'];
     $giocatore_sicurezza = $_POST['giocatore_sicurezza'];
     $nuova_password = $_POST['nuova_password'];
 
     $query_check = "SELECT id, giocatore_preferito FROM public.utenti WHERE email = $1";
-    $res_check = pg_query_params($db, $query_check, array($email));
+    $res_check = pg_query_params($db, $query_check, array($email_rec));
 
     if ($res_check && pg_num_rows($res_check) > 0) {
         $utente = pg_fetch_assoc($res_check);
         if (strtolower(trim($utente['giocatore_preferito'])) === strtolower(trim($giocatore_sicurezza))) {
             $nuovo_hash = password_hash($nuova_password, PASSWORD_BCRYPT);
             $query_update = "UPDATE public.utenti SET password = $1 WHERE email = $2";
-            $res_update = pg_query_params($db, $query_update, array($nuovo_hash, $email));
+            $res_update = pg_query_params($db, $query_update, array($nuovo_hash, $email_rec));
             if ($res_update) {
-                $msg_successo = "Password aggiornata! Ora puoi accedere.";
+                $msg_successo = "Password aggiornata con successo! Ora puoi accedere.";
             } else {
-                $errore_recupero = "Errore durante l'aggiornamento.";
+                $errore_recupero = "Errore durante l'aggiornamento della password.";
             }
         } else {
             $errore_recupero = "Risposta di sicurezza errata.";
@@ -61,17 +62,17 @@ if (isset($_POST['submit_recupero'])) {
     }
 }
 
-// --- LOGICA LOGIN ---
+//  LOGICA LOGIN 
 if (isset($_POST['submit_login'])) {
-    $email = $_POST['email'];
+    $email_inserita = htmlspecialchars($_POST['email']); 
     $password_inserita = $_POST['password'];
 
     $query_login = "SELECT * FROM public.utenti WHERE email = $1";
-    $res_login = pg_query_params($db, $query_login, array($email));
+    $res_login = pg_query_params($db, $query_login, array($email_inserita));
     
-    if ($res_login) {
+    if ($res_login && pg_num_rows($res_login) > 0) {
         $utente = pg_fetch_assoc($res_login);
-        if ($utente && password_verify($password_inserita, $utente['password'])) {
+        if (password_verify($password_inserita, $utente['password'])) {
             $_SESSION['id_utente'] = $utente['id'];
             $_SESSION['nome'] = $utente['nome'];
             $_SESSION['ruolo'] = trim($utente['ruolo']);
@@ -80,14 +81,14 @@ if (isset($_POST['submit_login'])) {
             header("Location: $redirect"); 
             exit;
         } else {
-            $errore_login = "Email o password errati!";
+            $errore_login = "Password errata!";
         }
     } else {
-        $errore_login = "Errore di connessione al database.";
+        $errore_login = "Account non trovato o errore di connessione.";
     }
 }
 
-// --- LOGICA LOGOUT ---
+// LOGICA LOGOUT
 if (isset($_GET['logout'])) {
     session_destroy();
     header("Location: login.php");
@@ -102,7 +103,8 @@ include 'includes/header.php';
     $version = file_exists($css_path) ? filemtime($css_path) : '1.0';
 ?>
 <link rel="stylesheet" href="<?= $css_path ?>?v=<?= $version ?>">
-<script src="js/script.js"></script>
+<script src="js/script.js?v=<?= time(); ?>"></script>
+
 <main class="container-login">
     <section class="portale-tifoso">
         <h2>Portale Lupo Biancoverde 🐺</h2>
@@ -113,13 +115,22 @@ include 'includes/header.php';
         </div>
 
         <div id="tab-login" class="tab-content">
-            <?php if($errore_login) echo "<p class='msg error'>$errore_login</p>"; ?>
-            <?php if($msg_successo) echo "<p class='msg success'>$msg_successo</p>"; ?>
+            <?php if($errore_login): ?>
+                <p class="msg-box error-style"><?= $errore_login ?></p>
+            <?php endif; ?>
             
-            <form action="login.php" method="POST">
+            <?php if($msg_successo): ?>
+                <p class="msg-box success-style"><?= $msg_successo ?></p>
+            <?php endif; ?>
+            
+            <p id="errore-js-login" class="msg-box error-style" style="display: none;"></p>
+            
+            <form action="login.php" method="POST" onsubmit="return validaLogin()" novalidate>
                 <div class="form-group">
                     <label>Email:</label>
-                    <input type="email" name="email" placeholder="Inserisci la tua email" required>
+                    <input type="email" id="login-email" name="email" 
+                           value="<?= htmlspecialchars($email_inserita) ?>" 
+                           placeholder="Inserisci la tua email" required>
                 </div>
                 <div class="form-group">
                     <label>Password:</label>
@@ -133,19 +144,24 @@ include 'includes/header.php';
         </div>
 
         <div id="tab-registrati" class="tab-content" style="display:none;">
-            <?php if($errore_reg) echo "<p class='msg error'>$errore_reg</p>"; ?>
-            <form action="login.php" method="POST">
+            <?php if($errore_reg): ?>
+                <p class="msg-box error-style"><?= $errore_reg ?></p>
+            <?php endif; ?>
+            
+            <p id="errore-js-reg" class="msg-box error-style" style="display: none;"></p>
+            
+            <form action="login.php" method="POST" onsubmit="return validaRegistrazione()" novalidate>
                 <div class="form-group">
                     <label>Nome Completo:</label>
                     <input type="text" name="nome" placeholder="es. Mario Rossi" required>
                 </div>
                 <div class="form-group">
                     <label>Email:</label>
-                    <input type="email" name="email" placeholder="email@esempio.it" required>
+                    <input type="email" id="reg-email" name="email" placeholder="email@esempio.it" required>
                 </div>
                 <div class="form-group">
                     <label>Password:</label>
-                    <input type="password" name="password" placeholder="Scegli una password sicura" required>
+                    <input type="password" id="reg-password" name="password" placeholder="Scegli una password sicura" required>
                 </div>
                 <div class="form-group">
                     <label>Giocatore Preferito (Domanda di sicurezza):</label>
@@ -157,9 +173,9 @@ include 'includes/header.php';
 
         <div id="tab-recupero" class="tab-content" style="display:none;">
             <h3>Recupera Password</h3>
-            <p class="info-text">Inserisci l'email e la risposta alla domanda di sicurezza.</p>
-            
-            <?php if($errore_recupero) echo "<p class='msg error'>$errore_recupero</p>"; ?>
+            <?php if($errore_recupero): ?>
+                <p class="msg-box error-style"><?= $errore_recupero ?></p>
+            <?php endif; ?>
             
             <form action="login.php" method="POST">
                 <div class="form-group">
@@ -183,30 +199,37 @@ include 'includes/header.php';
     </section>
 </main>
 
-<script>
-function cambiaTab(tipo) {
-    const tabs = ['tab-login', 'tab-registrati', 'tab-recupero'];
-    const btns = { 'login': 'btnLogin', 'registrati': 'btnRegistrati' };
-    
-    // Nascondi tutto
-    tabs.forEach(tab => document.getElementById(tab).style.display = 'none');
-    
-    // Rimuovi active dai bottoni principali
-    Object.values(btns).forEach(id => document.getElementById(id).classList.remove('active'));
-
-    // Mostra il selezionato
-    document.getElementById('tab-' + tipo).style.display = 'block';
-    
-    // Se è uno dei due bottoni principali, aggiungi active
-    if (btns[tipo]) {
-        document.getElementById(btns[tipo]).classList.add('active');
-    }
+<style>
+/* CSS Aggiuntivo per i messaggi */
+.msg-box {
+    padding: 12px;
+    border-radius: 5px;
+    margin-bottom: 15px;
+    font-size: 14px;
+    text-align: center;
+    font-weight: bold;
 }
+.error-style {
+    background-color: #f8d7da;
+    color: #721c24;
+    border: 1px solid #f5c6cb;
+}
+.success-style {
+    background-color: #d4edda;
+    color: #155724;
+    border: 1px solid #c3e6cb;
+}
+</style>
 
-// Mantieni il tab recupero se c'è un errore specifico
-<?php if(isset($_POST['submit_recupero']) && !empty($errore_recupero)): ?>
-    cambiaTab('recupero');
-<?php endif; ?>
+<script>
+
+document.addEventListener("DOMContentLoaded", function() {
+    <?php if(isset($_POST['submit_recupero']) || !empty($errore_recupero)): ?>
+        cambiaTab('recupero');
+    <?php elseif(isset($_POST['submit_registrazione']) || !empty($errore_reg)): ?>
+        cambiaTab('registrati');
+    <?php endif; ?>
+});
 </script>
 
 <?php include 'includes/footer.php'; ?>
