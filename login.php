@@ -102,7 +102,7 @@ include 'includes/header.php';
     $version = file_exists($css_path) ? filemtime($css_path) : '1.0';
 ?>
 <link rel="stylesheet" href="<?= $css_path ?>?v=<?= $version ?>">
-
+<script src="js/script.js"></script>
 <main class="container-login">
     <section class="portale-tifoso">
         <h2>Portale Lupo Biancoverde 🐺</h2>

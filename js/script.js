@@ -32,23 +32,46 @@ function validaLogin() {
     return true; 
 }
 
-// Validazione Registrazione lato client
 function validaRegistrazione() {
-    const email = document.getElementById('reg-email').value;
-    const password = document.getElementById('reg-password').value;
+    // Recupero elementi e rimozione spazi bianchi superflui (trim)
+    const emailInput = document.getElementById('reg-email');
+    const passwordInput = document.getElementById('reg-password');
     const erroreLabel = document.getElementById('errore-js-reg');
     
-    if (!email.includes('@') || !email.includes('.')) {
-        erroreLabel.textContent = "Inserisci un indirizzo email valido.";
-        return false;
-    }
-    
-    if (password.length < 6) {
-        erroreLabel.textContent = "La password deve contenere almeno 6 caratteri.";
-        return false;
-    }
-    
+    const email = emailInput.value.trim();
+    const password = passwordInput.value;
+
+    // 1. Regex per Email (standard RFC 5322)
+    // Non controlla solo @ e punto, ma anche la struttura corretta
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+    // Almeno 8 caratteri, una maiuscola, una minuscola e un numero
+    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/;
+    // Reset del messaggio di errore
     erroreLabel.textContent = "";
+    // Validazione Email
+    if (email === "") {
+        erroreLabel.textContent = "Il campo email è obbligatorio.";
+        return false;
+    }
+    if (!emailRegex.test(email)) {
+        erroreLabel.textContent = "L'indirizzo email non è formattato correttamente.";
+        return false;
+    }
+    // Validazione Password
+    if (password === "") {
+        erroreLabel.textContent = "Il campo password è obbligatorio.";
+        return false;
+    }
+    if (!passwordRegex.test(password)) {
+        erroreLabel.textContent = "La password deve contenere almeno 8 caratteri, una maiuscola, una minuscola e un numero.";
+        return false;
+    }
+    // Opzionale: Controllo se la password contiene l'email 
+    if (password.toLowerCase().includes(email.split('@')[0].toLowerCase())) {
+        erroreLabel.textContent = "La password non può contenere parte del tuo indirizzo email.";
+        return false;
+    }
     return true;
 }
 
